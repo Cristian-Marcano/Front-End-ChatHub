@@ -1,29 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div class="wrapper">
+      <div class="card-switch">
+        <label class="switch">
+          <input type="checkbox" class="toggle"/>
+          <span class="slider"></span>
+          <span class="card-side"></span>
+            <div class="flip-card__inner">
+              <div class="flip-card__front">
+                <div class="title">Iniciar Sesion</div>
+                <form class="flip-card__form" action="">
+                  <input class="flip-card__input" name="email" placeholder="Correo" type="email"/>
+                  <input class="flip-card__input" name="password" placeholder="Contraseña" type="password"/>
+                  <button class="flip-card__btn">Iniciar</button>
+                </form>
+              </div>
+              <div class="flip-card__back">
+                <div class="title">Registrarse</div>
+                <form class="flip-card__form" action="">
+                  <input class="flip-card__input" placeholder="Name" type="name"/>
+                  <input class="flip-card__input" name="email" placeholder="Email" type="email"/>
+                  <input class="flip-card__input" name="password" placeholder="Password" type="password"></input>
+                  <button class="flip-card__btn">Confirmar</button>
+                </form>
+              </div>
+            </div>
+        </label>
       </div>
-      <h1>React ChatHub</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
-    </>
-  )
+    </div>
+  ) 
 }
 
 export default App
