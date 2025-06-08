@@ -35,5 +35,24 @@ export const authService = {
     }
 
     return data;
+  },
+
+  async verifyEmail(data) {
+    const payload = { ...data, code: Number(data.code) }; // Backend espera que 'code' sea un número
+    const response = await fetch(`${ENV.API_URL}/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || result.error?.message || 'Error al verificar el correo');
+    }
+
+    return result;
   }
 };

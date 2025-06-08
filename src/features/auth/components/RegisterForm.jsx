@@ -1,7 +1,7 @@
 import { InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useRegisterForm } from '../hooks/useRegisterForm';
 
-const RegisterForm = ({ onNavigateToLogin }) => {
+const RegisterForm = ({ onNavigateToLogin, onRegisterSuccess }) => {
   const { 
     register, 
     handleSubmit, 
@@ -14,9 +14,19 @@ const RegisterForm = ({ onNavigateToLogin }) => {
     setSuccessMsg
   } = useRegisterForm();
 
+  const handleFormSubmit = async (data) => {
+    const email = await onSubmit(data);
+    if (email && onRegisterSuccess) {
+      // Delay navigation slightly to let user see success message
+      setTimeout(() => {
+        onRegisterSuccess(email);
+      }, 1500);
+    }
+  };
+
   return (
     <>
-      <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(handleFormSubmit)}>
         <InputField 
           type="text" 
           placeholder="Nombre de Usuario" 

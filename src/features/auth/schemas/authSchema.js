@@ -12,3 +12,8 @@ export const registerSchema = z.object({
   email: z.string().min(1, 'El correo es requerido').email('Correo electrónico inválido'),
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 });
+
+export const verifyEmailSchema = z.object({
+  code: z.string().min(6, 'El código debe tener al menos 6 dígitos').max(6, 'El código debe tener exactamente 6 dígitos'),
+  email: z.string().min(1, 'El correo es requerido').email('Correo electrónico inválido'),
+});

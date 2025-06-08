@@ -1,39 +1,32 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema } from '../schemas/authSchema';
+import { verifyEmailSchema } from '../schemas/authSchema';
 import { authService } from '../services/authService';
 
-export const useRegisterForm = () => {
+export const useVerifyEmailForm = (email, onSuccess) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(verifyEmailSchema),
+    defaultValues: { email }
   });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     setApiError(null);
-    setSuccessMsg(null);
     try {
-      const payload = { 
-        username: data.username,
-        email: data.email, 
-        password: data.password 
-      };
-      
-      const response = await authService.register(payload);
-      setSuccessMsg(response.message || 'Código enviado al correo');
-      
-      return payload.email; // Devolver el email para que el componente lo use
+      await authService.verifyEmail(data);
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
-      console.error('Error en registro:', error);
+      console.error('Error en verificación:', error);
       setApiError(error.message);
     } finally {
       setIsLoading(false);
@@ -47,8 +40,6 @@ export const useRegisterForm = () => {
     onSubmit,
     isLoading,
     apiError,
-    setApiError,
-    successMsg,
-    setSuccessMsg
+    setApiError
   };
 };
