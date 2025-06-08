@@ -1,8 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { ENV } from '../../../config/env';
 
 export const authService = {
   async login(credentials) {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${ENV.API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

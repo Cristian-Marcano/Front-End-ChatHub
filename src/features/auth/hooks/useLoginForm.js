@@ -42,6 +42,7 @@ export const useLoginForm = () => {
     errors,
     onSubmit,
     isLoading,
-    apiError
+    apiError,
+    setApiError
   };
 };
