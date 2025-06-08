@@ -1,10 +1,17 @@
+import { useState } from 'react';
 import { Card } from './components/ui';
-import { LoginForm } from './features/auth';
+import { LoginForm, RegisterForm } from './features/auth';
 
 const App = () => {
+  const [currentView, setCurrentView] = useState('login'); // 'login' or 'register'
+
   return (
-    <Card title="Iniciar Sesión">
-      <LoginForm />
+    <Card title={currentView === 'login' ? 'Iniciar Sesión' : 'Registrarse'}>
+      {currentView === 'login' ? (
+        <LoginForm onNavigateToRegister={() => setCurrentView('register')} />
+      ) : (
+        <RegisterForm onNavigateToLogin={() => setCurrentView('login')} />
+      )}
     </Card>
   );
 };
