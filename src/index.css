@@ -18,6 +18,19 @@
       transform: translateX(0) scale(1);
     }
   }
+
+  --animate-fade-out: fade-out 0.4s ease-in forwards;
+
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%) scale(0.9);
+    }
+  }
 }
 
 @layer base {
