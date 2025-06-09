@@ -1,4 +1,5 @@
 import { forwardRef, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const InputField = forwardRef(({ name, type, placeholder, error, ...props }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +23,10 @@ const InputField = forwardRef(({ name, type, placeholder, error, ...props }, ref
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl focus:outline-none cursor-pointer hover:scale-110 transition-transform"
+            className="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none cursor-pointer hover:scale-110 transition-transform text-black"
             title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
-            {showPassword ? '🙈' : '👁️'}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         )}
       </div>

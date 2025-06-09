@@ -1,7 +1,7 @@
 import { InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useLoginForm } from '../hooks/useLoginForm';
 
-const LoginForm = ({ onNavigateToRegister }) => {
+const LoginForm = ({ onNavigateToRegister, onNavigateToForgotPassword }) => {
   const { register, handleSubmit, errors, onSubmit, isLoading, apiError, setApiError } = useLoginForm();
 
   return (
@@ -24,18 +24,22 @@ const LoginForm = ({ onNavigateToRegister }) => {
             {...register('password')}
           />
           <div className="flex justify-between w-full">
-          <button 
-            type="button"
-            onClick={onNavigateToRegister}
-            className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            ¿No tienes cuenta?
-          </button>
-          
-          <a href="#forgot-password" className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
+            <button 
+              type="button"
+              onClick={onNavigateToRegister}
+              className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
+            >
+              ¿No tienes cuenta?
+            </button>
+            
+            <button 
+              type="button"
+              onClick={onNavigateToForgotPassword}
+              className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
         </div>
 
         <SubmitButton disabled={isLoading}>

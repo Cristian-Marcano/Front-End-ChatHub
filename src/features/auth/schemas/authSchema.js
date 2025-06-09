@@ -17,3 +17,12 @@ export const verifyEmailSchema = z.object({
   code: z.string().min(6, 'El código debe tener al menos 6 dígitos').max(6, 'El código debe tener exactamente 6 dígitos'),
   email: z.string().min(1, 'El correo es requerido').email('Correo electrónico inválido'),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().min(1, 'El correo es requerido').email('Correo electrónico inválido'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'El token es requerido'),
+  newPassword: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+});
