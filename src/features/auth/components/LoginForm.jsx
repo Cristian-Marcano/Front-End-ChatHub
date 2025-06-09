@@ -1,11 +1,12 @@
-import { InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Link } from 'react-router-dom';
+import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useLoginForm } from '../hooks/useLoginForm';
 
-const LoginForm = ({ onNavigateToRegister, onNavigateToForgotPassword }) => {
+const LoginForm = () => {
   const { register, handleSubmit, errors, onSubmit, isLoading, apiError, setApiError } = useLoginForm();
 
   return (
-    <>
+    <Card title="Iniciar Sesión">
       <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
         <InputField 
           type="email" 
@@ -24,21 +25,19 @@ const LoginForm = ({ onNavigateToRegister, onNavigateToForgotPassword }) => {
             {...register('password')}
           />
           <div className="flex justify-between w-full">
-            <button 
-              type="button"
-              onClick={onNavigateToRegister}
+            <Link 
+              to="/register"
               className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
             >
               ¿No tienes cuenta?
-            </button>
+            </Link>
             
-            <button 
-              type="button"
-              onClick={onNavigateToForgotPassword}
+            <Link 
+              to="/forgot-password"
               className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
             >
               ¿Olvidaste tu contraseña?
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -52,7 +51,7 @@ const LoginForm = ({ onNavigateToRegister, onNavigateToForgotPassword }) => {
         type="error" 
         onClose={() => setApiError(null)} 
       />
-    </>
+    </Card>
   );
 };
 

@@ -1,7 +1,14 @@
-import { InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useForgotPasswordForm } from '../hooks/useForgotPasswordForm';
 
-const ForgotPasswordForm = ({ onNavigateToLogin, onNavigateToReset }) => {
+const ForgotPasswordForm = () => {
+  const navigate = useNavigate();
+  
+  const handleSuccess = () => {
+    navigate('/reset-password');
+  };
+
   const { 
     register, 
     handleSubmit, 
@@ -12,10 +19,10 @@ const ForgotPasswordForm = ({ onNavigateToLogin, onNavigateToReset }) => {
     setApiError,
     successMsg,
     setSuccessMsg
-  } = useForgotPasswordForm(onNavigateToReset);
+  } = useForgotPasswordForm(handleSuccess);
 
   return (
-    <>
+    <Card title="Recuperar Contraseña">
       <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
         <p className="text-center text-sm font-bold text-gray-700">
           Ingresa tu correo para recibir un token de recuperación.
@@ -30,27 +37,24 @@ const ForgotPasswordForm = ({ onNavigateToLogin, onNavigateToReset }) => {
         />
         
         <div className="flex justify-end w-full">
-          <button 
-            type="button" 
-            onClick={onNavigateToLogin}
+          <Link 
+            to="/login"
             className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
           >
             Volver a Iniciar Sesión
-          </button>
+          </Link>
         </div>
 
         <SubmitButton disabled={isLoading}>
           {isLoading ? 'Enviando...' : 'Recuperar Contraseña'}
         </SubmitButton>
         
-        {/* Helper temporary button for demo flow without actual email delivery */}
-        <button 
-          type="button"
-          onClick={onNavigateToReset}
-          className="mt-2 text-xs text-center text-gray-500 underline cursor-pointer"
+        <Link 
+          to="/reset-password"
+          className="mt-2 text-xs text-center text-gray-500 underline cursor-pointer inline-block w-full"
         >
           (Ir a resetear - Demo Flow)
-        </button>
+        </Link>
       </form>
 
       <Toast 
@@ -64,7 +68,7 @@ const ForgotPasswordForm = ({ onNavigateToLogin, onNavigateToReset }) => {
         type="success" 
         onClose={() => setSuccessMsg(null)} 
       />
-    </>
+    </Card>
   );
 };
 

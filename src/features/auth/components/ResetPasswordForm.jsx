@@ -1,7 +1,14 @@
-import { InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useResetPasswordForm } from '../hooks/useResetPasswordForm';
 
-const ResetPasswordForm = ({ onNavigateToLogin }) => {
+const ResetPasswordForm = () => {
+  const navigate = useNavigate();
+
+  const handleSuccess = () => {
+    navigate('/login');
+  };
+
   const { 
     register, 
     handleSubmit, 
@@ -12,10 +19,10 @@ const ResetPasswordForm = ({ onNavigateToLogin }) => {
     setApiError,
     successMsg,
     setSuccessMsg
-  } = useResetPasswordForm(onNavigateToLogin);
+  } = useResetPasswordForm(handleSuccess);
 
   return (
-    <>
+    <Card title="Restablecer Contraseña">
       <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
         <p className="text-center text-sm font-bold text-gray-700">
           Ingresa el token que recibiste y tu nueva contraseña.
@@ -38,13 +45,12 @@ const ResetPasswordForm = ({ onNavigateToLogin }) => {
         />
         
         <div className="flex justify-end w-full">
-          <button 
-            type="button" 
-            onClick={onNavigateToLogin}
+          <Link 
+            to="/login"
             className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
           >
             Cancelar y volver al Login
-          </button>
+          </Link>
         </div>
 
         <SubmitButton disabled={isLoading}>
@@ -63,7 +69,7 @@ const ResetPasswordForm = ({ onNavigateToLogin }) => {
         type="success" 
         onClose={() => setSuccessMsg(null)} 
       />
-    </>
+    </Card>
   );
 };
 

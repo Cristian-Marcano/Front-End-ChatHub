@@ -1,7 +1,9 @@
-import { InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useRegisterForm } from '../hooks/useRegisterForm';
 
-const RegisterForm = ({ onNavigateToLogin, onRegisterSuccess }) => {
+const RegisterForm = () => {
+  const navigate = useNavigate();
   const { 
     register, 
     handleSubmit, 
@@ -16,16 +18,15 @@ const RegisterForm = ({ onNavigateToLogin, onRegisterSuccess }) => {
 
   const handleFormSubmit = async (data) => {
     const email = await onSubmit(data);
-    if (email && onRegisterSuccess) {
-      // Delay navigation slightly to let user see success message
+    if (email) {
       setTimeout(() => {
-        onRegisterSuccess(email);
+        navigate('/verify-email', { state: { email } });
       }, 1500);
     }
   };
 
   return (
-    <>
+    <Card title="Registrarse">
       <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(handleFormSubmit)}>
         <InputField 
           type="text" 
@@ -52,13 +53,12 @@ const RegisterForm = ({ onNavigateToLogin, onRegisterSuccess }) => {
         />
 
         <div className="flex justify-end">
-          <button 
-            type="button" 
-            onClick={onNavigateToLogin}
+          <Link 
+            to="/login"
             className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
           >
             ¿Ya tienes cuenta? Inicia Sesión
-          </button>
+          </Link>
         </div>
 
         <SubmitButton disabled={isLoading}>
@@ -77,7 +77,7 @@ const RegisterForm = ({ onNavigateToLogin, onRegisterSuccess }) => {
         type="success" 
         onClose={() => setSuccessMsg(null)} 
       />
-    </>
+    </Card>
   );
 };
 

@@ -20,13 +20,18 @@ export const useLoginForm = () => {
     setIsLoading(true);
     setApiError(null);
     try {
-      // Usamos el email como identificador (puede funcionar como email o username según el backend)
       const payload = { email: data.email, password: data.password };
       const response = await authService.login(payload);
       
-      // Aquí se debería guardar el token (localStorage, Zustand, etc)
+      localStorage.setItem('token', response.token);
+      if (response.refreshToken) {
+        localStorage.setItem('refreshToken', response.refreshToken);
+      }
+      
       console.log('Login exitoso:', response);
-      alert('¡Sesión iniciada correctamente!');
+      // alert('¡Sesión iniciada correctamente!');
+      
+      // Opcional: navigate('/') o manejarlo en el componente
       
     } catch (error) {
       console.error('Error en login:', error);

@@ -1,7 +1,16 @@
-import { InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useVerifyEmailForm } from '../hooks/useVerifyEmailForm';
 
-const VerifyEmailForm = ({ email, onNavigateToLogin, onSuccess }) => {
+const VerifyEmailForm = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const email = location.state?.email || '';
+
+  const handleSuccess = () => {
+    navigate('/login');
+  };
+
   const { 
     register, 
     handleSubmit, 
@@ -10,10 +19,10 @@ const VerifyEmailForm = ({ email, onNavigateToLogin, onSuccess }) => {
     isLoading, 
     apiError, 
     setApiError
-  } = useVerifyEmailForm(email, onSuccess);
+  } = useVerifyEmailForm(email, handleSuccess);
 
   return (
-    <>
+    <Card title="Verificar Correo">
       <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit(onSubmit)}>
         <p className="text-center text-sm font-bold text-gray-700">
           Se ha enviado un código de verificación a <br/>
@@ -35,13 +44,12 @@ const VerifyEmailForm = ({ email, onNavigateToLogin, onSuccess }) => {
         />
         
         <div className="flex justify-end w-full">
-          <button 
-            type="button" 
-            onClick={onNavigateToLogin}
+          <Link 
+            to="/login"
             className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-blue-600 transition-colors cursor-pointer"
           >
             Volver a Iniciar Sesión
-          </button>
+          </Link>
         </div>
 
         <SubmitButton disabled={isLoading}>
@@ -54,7 +62,7 @@ const VerifyEmailForm = ({ email, onNavigateToLogin, onSuccess }) => {
         type="error" 
         onClose={() => setApiError(null)} 
       />
-    </>
+    </Card>
   );
 };
 
