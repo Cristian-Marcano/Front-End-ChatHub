@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 import { loginSchema } from '../schemas/authSchema';
 import { authService } from '../services/authService';
 
 export const useLoginForm = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
 
@@ -29,9 +31,8 @@ export const useLoginForm = () => {
       }
       
       console.log('Login exitoso:', response);
-      // alert('¡Sesión iniciada correctamente!');
       
-      // Opcional: navigate('/') o manejarlo en el componente
+      navigate('/chat');
       
     } catch (error) {
       console.error('Error en login:', error);
