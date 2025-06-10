@@ -32,7 +32,7 @@ export const useLoginForm = () => {
       
       console.log('Login exitoso:', response);
       
-      navigate('/chat');
+      navigate('/');
       
     } catch (error) {
       console.error('Error en login:', error);
