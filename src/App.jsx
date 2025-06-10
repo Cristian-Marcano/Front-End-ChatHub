@@ -9,6 +9,7 @@ import {
   PublicRoute
 } from './features/auth';
 import { ChatLayout } from './features/chat';
+import { NotFound } from './components/ui';
 
 const App = () => {
   return (
@@ -27,6 +28,9 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
         </Route>
+
+        {/* Catch-all Not Found Route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,6 +1,23 @@
-import { Search, MoreVertical, MessageSquarePlus } from 'lucide-react';
+import { Search, MoreVertical, MessageSquarePlus, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../auth/services/authService';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    try {
+      await authService.logout(refreshToken);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      navigate('/login');
+    }
+  };
+
   const dummyChats = [
     { id: 1, name: 'Alice', lastMessage: 'Hola, ¿cómo estás?', time: '10:45 AM', unread: 2, color: 'bg-pink-400' },
     { id: 2, name: 'Bob', lastMessage: 'No te olvides de la reunión.', time: 'Ayer', unread: 0, color: 'bg-blue-400' },
@@ -13,8 +30,9 @@ const Sidebar = () => {
       <div className="h-16 border-b-4 border-black bg-white flex items-center justify-between px-4 shrink-0">
         <div className="w-10 h-10 bg-yellow-400 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] cursor-pointer"></div>
         <div className="flex gap-4">
-          <button className="text-black hover:scale-110 transition-transform cursor-pointer"><MessageSquarePlus size={24} /></button>
-          <button className="text-black hover:scale-110 transition-transform cursor-pointer"><MoreVertical size={24} /></button>
+          <button className="text-black hover:scale-110 transition-transform cursor-pointer" title="Nuevo chat"><MessageSquarePlus size={24} /></button>
+          <button className="text-black hover:scale-110 transition-transform cursor-pointer" title="Más opciones"><MoreVertical size={24} /></button>
+          <button onClick={handleLogout} className="text-red-500 hover:scale-110 transition-transform cursor-pointer" title="Cerrar Sesión"><LogOut size={24} /></button>
         </div>
       </div>
 

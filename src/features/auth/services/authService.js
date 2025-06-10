@@ -90,5 +90,23 @@ export const authService = {
     }
 
     return result;
+  },
+
+  async logout(refreshToken) {
+    if (!refreshToken) return;
+    
+    const response = await fetch(`${ENV.API_URL}/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    // In a real app we might not throw if logout fails, 
+    // we just want to remove the token locally anyway.
+    if (!response.ok) {
+      console.warn('Backend logout failed, but local session will be destroyed.');
+    }
   }
 };
