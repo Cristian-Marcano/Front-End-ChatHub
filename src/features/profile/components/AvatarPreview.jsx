@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { createAvatar } from '@dicebear/core';
-import { initials } from '@dicebear/initials';
+import * as initials from '@dicebear/initials';
 import { 
   adventurer, dylan, lorelei, micah, miniavs, 
   notionists, openPeeps, personas, pixelArt, toonHead 
