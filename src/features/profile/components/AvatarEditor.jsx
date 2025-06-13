@@ -28,10 +28,9 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
   useEffect(() => {
     const avatar = createAvatar(STYLES[currentStyle].module, {
       seed: currentSeed,
-      size: 128,
       backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf'],
     });
-    setSvgContent(avatar.toString());
+    setSvgContent(avatar.toDataUri());
   }, [currentStyle, currentSeed]);
 
   const handleRandomize = () => {
@@ -59,10 +58,9 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
 
         {/* Vista Previa */}
         <div className="flex flex-col items-center gap-4">
-          <div 
-            className="w-32 h-32 border-4 border-black rounded-sm shadow-[4px_4px_0px_0px_#000] overflow-hidden bg-gray-100"
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          />
+          <div className="w-32 h-32 border-4 border-black rounded-sm shadow-[4px_4px_0px_0px_#000] overflow-hidden bg-gray-100 flex items-center justify-center p-0 m-0">
+            {svgContent && <img src={svgContent} alt="Avatar Preview" className="w-full h-full object-cover block" />}
+          </div>
           <button 
             type="button"
             onClick={handleRandomize}
