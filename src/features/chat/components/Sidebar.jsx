@@ -1,6 +1,7 @@
 import { Search, MoreVertical, MessageSquarePlus, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../auth/services/authService';
+import { AvatarPreview } from '../../profile';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -28,7 +29,13 @@ const Sidebar = () => {
     <div className="w-1/3 min-w-[320px] max-w-[450px] border-r-4 border-black flex flex-col bg-bg-light z-10">
       {/* Header */}
       <div className="h-16 border-b-4 border-black bg-white flex items-center justify-between px-4 shrink-0">
-        <div className="w-10 h-10 bg-yellow-400 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] cursor-pointer"></div>
+        <div 
+          onClick={() => navigate('/profile')}
+          className="cursor-pointer hover:-translate-y-1 hover:shadow-none transition-all rounded-sm border-2 border-black w-10 h-10 overflow-hidden shrink-0" 
+          title="Editar perfil"
+        >
+          <AvatarPreview config={null} name="User" className="w-full h-full border-none shadow-none" />
+        </div>
         <div className="flex gap-4">
           <button className="text-black hover:scale-110 transition-transform cursor-pointer" title="Nuevo chat"><MessageSquarePlus size={24} /></button>
           <button className="text-black hover:scale-110 transition-transform cursor-pointer" title="Más opciones"><MoreVertical size={24} /></button>
