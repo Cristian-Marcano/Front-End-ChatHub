@@ -17,6 +17,7 @@ export const AvatarPreview = ({ config, name, className = '' }) => {
       return createAvatar(STYLES[config.style], {
         seed: config.seed,
         backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf'],
+        ...(config.options || {})
       }).toDataUri();
     }
     
