@@ -4,7 +4,7 @@ import {
   adventurer, dylan, lorelei, micah, miniavs, 
   notionists, openPeeps, personas, pixelArt, toonHead 
 } from '@dicebear/collection';
-import { Dices, Check, X, Sparkles } from 'lucide-react';
+import { Dices, Check, X, Sparkles, Ban, ChevronDown } from 'lucide-react';
 
 const STYLES = {
   adventurer: { name: 'Adventurer', module: adventurer },
@@ -19,6 +19,46 @@ const STYLES = {
   toonHead: { name: 'Toon Head', module: toonHead },
 };
 
+// Custom Select Component for Neo-Brutalism + Lucide Icons
+const CustomSelect = ({ options, value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(o => o.value === value) || options[0];
+
+  return (
+    <div className="relative w-full">
+      <button 
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-3 border-4 border-black font-bold bg-white shadow-[4px_4px_0px_0px_#000] flex justify-between items-center hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer"
+      >
+        <span className="flex items-center gap-2">{selectedOption.icon} {selectedOption.label}</span>
+        <ChevronDown size={20} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-2 w-full bg-white border-4 border-black shadow-[4px_4px_0px_0px_#000] z-20 max-h-48 overflow-y-auto flex flex-col">
+            {options.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`p-3 text-left font-bold border-b-2 border-black last:border-b-0 hover:bg-gray-200 flex items-center gap-2 cursor-pointer ${value === opt.value ? 'bg-gray-200' : ''}`}
+              >
+                {opt.icon} {opt.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
   const [currentStyle, setCurrentStyle] = useState(initialConfig?.style || 'lorelei');
   const [currentSeed, setCurrentSeed] = useState(initialConfig?.seed || Math.random().toString(36).substring(7));
@@ -31,7 +71,7 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
   useEffect(() => {
     const avatar = createAvatar(STYLES[currentStyle].module, {
       seed: currentSeed,
-      backgroundColor: ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf'],
+      backgroundColor: customOptions.backgroundColor || ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf'],
       ...customOptions
     });
     setSvgContent(avatar.toDataUri());
@@ -69,7 +109,48 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
   const renderDynamicOptions = () => {
     const keys = Object.keys(schema).filter(k => k !== 'base' && !k.endsWith('Probability') && k !== 'backgroundColor');
     
-    return keys.map(key => {
+    // Convert elements to render array
+    const elements = [];
+
+    // Manually add background color picker
+    const currentBg = customOptions.backgroundColor?.[0] || 'RANDOM';
+    const displayBg = currentBg !== 'RANDOM' && currentBg !== 'transparent' ? `#${currentBg}` : '#ffffff';
+
+    elements.push(
+      <div key="backgroundColor" className="flex flex-col gap-2 mb-4 col-span-1 lg:col-span-2">
+        <label className="font-black text-black capitalize">Fondo (Background)</label>
+        <div className="flex flex-wrap items-center gap-4 p-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000]">
+          <button 
+            onClick={() => handleOptionChange('backgroundColor', 'RANDOM')}
+            className={`flex items-center gap-2 px-4 py-2 font-bold border-2 border-black rounded-sm cursor-pointer hover:-translate-y-1 transition-transform ${currentBg === 'RANDOM' ? 'bg-black text-white' : 'bg-gray-200'}`}
+            title="Aleatorio"
+          >
+            <Sparkles size={16} /> Aleatorio
+          </button>
+          
+          <button 
+            onClick={() => handleOptionChange('backgroundColor', 'transparent')}
+            className={`flex items-center gap-2 px-4 py-2 font-bold border-2 border-black rounded-sm cursor-pointer hover:-translate-y-1 transition-transform ${currentBg === 'transparent' ? 'ring-4 ring-black ring-offset-2 bg-gray-100' : 'bg-white'}`}
+            title="Transparente"
+          >
+            <div className="w-4 h-4 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjY2NjIi8+CjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNjY2MiLz4KPC9zdmc+')] border border-black" /> Transparente
+          </button>
+
+          <div className="flex items-center gap-2 border-l-4 border-black pl-4">
+            <input 
+              type="color"
+              value={displayBg}
+              onChange={(e) => handleOptionChange('backgroundColor', e.target.value.replace('#', ''))}
+              className="w-10 h-10 cursor-pointer p-0"
+              title="Color personalizado"
+            />
+            <span className="font-bold text-sm uppercase">{currentBg !== 'RANDOM' && currentBg !== 'transparent' ? displayBg : 'Escoger'}</span>
+          </div>
+        </div>
+      </div>
+    );
+
+    keys.forEach(key => {
       const prop = schema[key];
       const hasProbability = !!schema[`${key}Probability`];
       
@@ -79,62 +160,66 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
         const currentVal = customOptions[key]?.[0];
         const isNone = customOptions[`${key}Probability`] === 0;
         
-        return (
-          <div key={key} className="flex flex-col gap-2">
+        const options = [
+          { value: 'RANDOM', label: 'Aleatorio', icon: <Dices size={16} /> }
+        ];
+        if (hasProbability) {
+          options.push({ value: 'NONE', label: 'Ninguno', icon: <Ban size={16} className="text-red-500" /> });
+        }
+        variants.forEach(v => {
+          options.push({ value: v, label: v, icon: null });
+        });
+
+        elements.push(
+          <div key={key} className="flex flex-col gap-2 mb-2">
             <label className="font-black text-black capitalize">{key}</label>
-            <select 
-               className="p-3 border-4 border-black font-bold focus:outline-none bg-white shadow-[4px_4px_0px_0px_#000] cursor-pointer"
-               value={isNone ? 'NONE' : currentVal || 'RANDOM'}
-               onChange={(e) => handleOptionChange(key, e.target.value)}
-            >
-               <option value="RANDOM">🎲 Aleatorio</option>
-               {hasProbability && <option value="NONE">❌ Ninguno</option>}
-               {variants.map(v => (
-                 <option key={v} value={v}>{v}</option>
-               ))}
-            </select>
+            <CustomSelect 
+              options={options} 
+              value={isNone ? 'NONE' : currentVal || 'RANDOM'}
+              onChange={(val) => handleOptionChange(key, val)}
+            />
           </div>
         );
       }
 
       // Color Picker for colors
-      if (key.toLowerCase().includes('color') || prop.items?.pattern) {
-        const colors = prop.default || [];
+      else if (key.toLowerCase().includes('color') || prop.items?.pattern) {
         const currentVal = customOptions[key]?.[0];
-        return (
-          <div key={key} className="flex flex-col gap-2">
+        const displayColor = currentVal && currentVal !== 'transparent' ? `#${currentVal}` : '#ffffff';
+        
+        elements.push(
+          <div key={key} className="flex flex-col gap-2 mb-2">
             <label className="font-black text-black capitalize">{key}</label>
-            <div className="flex flex-wrap gap-2 p-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000]">
+            <div className="flex flex-wrap items-center gap-4 p-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000]">
               <button 
                 onClick={() => handleOptionChange(key, 'RANDOM')}
-                className={`w-8 h-8 flex items-center justify-center border-2 border-black rounded-full cursor-pointer hover:-translate-y-1 transition-transform ${!currentVal ? 'bg-black text-white' : 'bg-gray-200'}`}
+                className={`flex gap-2 items-center px-4 py-2 font-bold border-2 border-black rounded-sm cursor-pointer hover:-translate-y-1 transition-transform ${!currentVal ? 'bg-black text-white' : 'bg-gray-200'}`}
                 title="Aleatorio"
               >
-                <Sparkles size={16} />
+                <Sparkles size={16} /> Aleatorio
               </button>
-              {colors.map(color => {
-                const hex = color === 'transparent' ? 'transparent' : `#${color}`;
-                const isSelected = currentVal === color;
-                return (
-                  <button
-                    key={color}
-                    onClick={() => handleOptionChange(key, color)}
-                    className={`w-8 h-8 rounded-full border-2 border-black cursor-pointer hover:-translate-y-1 transition-transform ${isSelected ? 'ring-4 ring-black ring-offset-2' : ''}`}
-                    style={{ backgroundColor: hex }}
-                    title={color}
-                  />
-                )
-              })}
+              
+              <div className="flex items-center gap-2 border-l-4 border-black pl-4">
+                <input 
+                  type="color"
+                  value={displayColor}
+                  onChange={(e) => handleOptionChange(key, e.target.value.replace('#', ''))}
+                  className="w-10 h-10 cursor-pointer p-0"
+                  title="Elegir Color"
+                />
+                <span className="font-bold text-sm uppercase">{currentVal && currentVal !== 'transparent' ? displayColor : 'Hex'}</span>
+              </div>
             </div>
           </div>
-        )
+        );
       }
-      return null;
     });
+
+    return elements;
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-bg-light border-4 border-black rounded-sm shadow-[8px_8px_0px_0px_#000] w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
         
         {/* Header */}
@@ -195,7 +280,7 @@ const AvatarEditor = ({ initialConfig, onSave, onCancel }) => {
           </div>
 
           {/* Right Column: Customization Form */}
-          <div className="w-full md:w-2/3 p-6 overflow-y-auto bg-bg-light">
+          <div className="w-full md:w-2/3 p-6 overflow-y-auto bg-bg-light relative">
             <div className="bg-yellow-300 border-4 border-black p-4 mb-6 rounded-sm shadow-[4px_4px_0px_0px_#000]">
               <h3 className="font-black text-xl">Personalización Detallada</h3>
               <p className="font-bold text-gray-800">Usa las opciones abajo para sobrescribir los valores aleatorios de la semilla actual.</p>
