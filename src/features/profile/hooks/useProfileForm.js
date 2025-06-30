@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema } from '../schemas/profileSchema';
-// import { profileService } from '../services/profileService';
+import { profileService } from '../services/profileService';
 
 export const useProfileForm = (onSuccess) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,10 +23,15 @@ export const useProfileForm = (onSuccess) => {
         const token = localStorage.getItem('token');
         if (!token) return;
         
-        // Mocked or real fetch
-        // const data = await profileService.getProfile(token);
-        // reset({ full_name: data.full_name, phone: data.phone, about: data.about });
-        // if (data.photo) setAvatarConfig(JSON.parse(data.photo));
+        const data = await profileService.getProfile(token);
+        reset({ full_name: data.full_name || '', phone: data.phone || '', about: data.about || '' });
+        
+        // El backend ahora guarda photo como JSON (o string JSON). 
+        // Si es string JSON hay que parsearlo, si es objeto lo usamos directo.
+        if (data.photo) {
+          const config = typeof data.photo === 'string' ? JSON.parse(data.photo) : data.photo;
+          setAvatarConfig(config);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -39,15 +44,13 @@ export const useProfileForm = (onSuccess) => {
     setApiError(null);
     setSuccessMsg(null);
     try {
-      // const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');
       const payload = {
         ...data,
         photo: avatarConfig ? JSON.stringify(avatarConfig) : null
       };
 
-      // Si el endpoint no existe aún, comentamos la llamada y simulamos éxito
-      // await profileService.updateProfile(token, payload);
-      console.log('Guardando Perfil:', payload);
+      await profileService.updateProfile(token, payload);
       
       setSuccessMsg('Perfil guardado correctamente');
       if (onSuccess) setTimeout(() => onSuccess(), 1500);
