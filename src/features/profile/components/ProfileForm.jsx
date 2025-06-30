@@ -43,7 +43,7 @@ const ProfileForm = ({ onSuccess, onCancel }) => {
         <div className="flex flex-col gap-4">
           <InputField 
             type="text" 
-            placeholder="Nombre Completo (opcional)" 
+            placeholder="Nombre Completo" 
             error={errors.full_name}
             disabled={isLoading}
             {...register('full_name')}

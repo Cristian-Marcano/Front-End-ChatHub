@@ -2,7 +2,7 @@ import { ENV } from '../../../config/env';
 
 export const profileService = {
   async getProfile(token) {
-    const response = await fetch(`${ENV.API_URL}/users/info`, {
+    const response = await fetch(`${ENV.API_URL}/api/users/info`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -17,7 +17,7 @@ export const profileService = {
   },
 
   async updateProfile(token, profileData) {
-    const response = await fetch(`${ENV.API_URL}/users/info`, {
+    const response = await fetch(`${ENV.API_URL}/api/users/info`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

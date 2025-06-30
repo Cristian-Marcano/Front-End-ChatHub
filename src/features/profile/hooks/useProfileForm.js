@@ -47,7 +47,7 @@ export const useProfileForm = (onSuccess) => {
       const token = localStorage.getItem('token');
       const payload = {
         ...data,
-        photo: avatarConfig ? JSON.stringify(avatarConfig) : null
+        photo: avatarConfig || null
       };
 
       await profileService.updateProfile(token, payload);
