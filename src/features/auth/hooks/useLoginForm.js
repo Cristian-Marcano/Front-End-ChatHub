@@ -18,7 +18,7 @@ export const useLoginForm = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data) => {
+    const onSubmit = async (data) => {
     setIsLoading(true);
     setApiError(null);
     try {
@@ -31,6 +31,22 @@ export const useLoginForm = () => {
       }
       
       console.log('Login exitoso:', response);
+
+      // Verify if profile info exists
+      try {
+        const profileRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/info`, {
+          headers: { 'Authorization': `Bearer ${response.token}` }
+        });
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          if (!profileData.idInfo) {
+            navigate('/profile');
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching profile on login:', e);
+      }
       
       navigate('/');
       

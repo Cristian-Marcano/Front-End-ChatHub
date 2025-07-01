@@ -14,30 +14,26 @@ export const useProfileForm = (onSuccess) => {
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(profileSchema),
-  });
-
-  useEffect(() => {
-    // Aquí cargaríamos el perfil inicial
-    const loadProfile = async () => {
+    defaultValues: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return { full_name: '', phone: '', about: '' };
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        
         const data = await profileService.getProfile(token);
-        reset({ full_name: data.full_name || '', phone: data.phone || '', about: data.about || '' });
-        
-        // El backend ahora guarda photo como JSON (o string JSON). 
-        // Si es string JSON hay que parsearlo, si es objeto lo usamos directo.
         if (data.photo) {
           const config = typeof data.photo === 'string' ? JSON.parse(data.photo) : data.photo;
           setAvatarConfig(config);
         }
+        return {
+          full_name: data.full_name || '',
+          phone: data.phone || '',
+          about: data.about || ''
+        };
       } catch (err) {
         console.error(err);
+        return { full_name: '', phone: '', about: '' };
       }
-    };
-    loadProfile();
-  }, [reset]);
+    }
+  });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
