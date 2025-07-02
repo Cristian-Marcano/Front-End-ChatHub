@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { loginSchema } from '../schemas/authSchema';
 import { authService } from '../services/authService';
+import { profileService } from '../../profile/services/profileService';
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
@@ -34,7 +35,6 @@ export const useLoginForm = () => {
 
       // Verify if profile info exists
       try {
-        const { profileService } = await import('../../profile/services/profileService.js');
         const profileData = await profileService.getProfile(response.token);
         if (!profileData.idInfo) {
           navigate('/profile');
