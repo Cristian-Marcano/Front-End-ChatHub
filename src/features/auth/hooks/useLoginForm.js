@@ -34,15 +34,11 @@ export const useLoginForm = () => {
 
       // Verify if profile info exists
       try {
-        const profileRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/info`, {
-          headers: { 'Authorization': `Bearer ${response.token}` }
-        });
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          if (!profileData.idInfo) {
-            navigate('/profile');
-            return;
-          }
+        const { profileService } = await import('../../profile/services/profileService.js');
+        const profileData = await profileService.getProfile(response.token);
+        if (!profileData.idInfo) {
+          navigate('/profile');
+          return;
         }
       } catch (e) {
         console.error('Error fetching profile on login:', e);

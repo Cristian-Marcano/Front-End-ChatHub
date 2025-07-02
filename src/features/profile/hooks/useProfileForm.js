@@ -14,26 +14,39 @@ export const useProfileForm = (onSuccess) => {
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return { full_name: '', phone: '', about: '' };
+    defaultValues: { full_name: '', phone: '', about: '' }
+  });
+
+  useEffect(() => {
+    const loadProfile = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
         const data = await profileService.getProfile(token);
-        if (data.photo) {
-          const config = typeof data.photo === 'string' ? JSON.parse(data.photo) : data.photo;
-          setAvatarConfig(config);
-        }
-        return {
+        
+        // Ensure reset runs with the fetched data
+        reset({
           full_name: data.full_name || '',
           phone: data.phone || '',
           about: data.about || ''
-        };
+        });
+        
+        if (data.photo) {
+          try {
+            const config = typeof data.photo === 'string' ? JSON.parse(data.photo) : data.photo;
+            setAvatarConfig(config);
+          } catch(e) {
+            console.error('Error parsing photo config:', e);
+          }
+        }
       } catch (err) {
-        console.error(err);
-        return { full_name: '', phone: '', about: '' };
+        console.error('Error fetching profile:', err);
       }
-    }
-  });
+    };
+    
+    loadProfile();
+  }, [reset]);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
