@@ -56,6 +56,8 @@ export const useProfileForm = (onSuccess) => {
       const token = localStorage.getItem('token');
       const payload = {
         ...data,
+        phone: data.phone || null,
+        about: data.about || null,
         photo: avatarConfig || null
       };
 
