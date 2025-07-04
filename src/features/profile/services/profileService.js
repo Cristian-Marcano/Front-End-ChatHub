@@ -1,5 +1,20 @@
 import { ENV } from '../../../config/env';
 
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    window.location.href = '/login';
+    throw new Error('Sesión expirada. Por favor inicie sesión nuevamente.');
+  }
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.message || 'Error en la petición');
+  }
+  return result;
+};
+
 export const profileService = {
   async getProfile(token) {
     const response = await fetch(`${ENV.API_URL}/api/users/info`, {
@@ -9,11 +24,7 @@ export const profileService = {
       }
     });
 
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || 'Error al obtener el perfil');
-    }
-    return result;
+    return handleResponse(response);
   },
 
   async updateProfile(token, profileData) {
@@ -26,10 +37,6 @@ export const profileService = {
       body: JSON.stringify(profileData)
     });
 
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || 'Error al actualizar el perfil');
-    }
-    return result;
+    return handleResponse(response);
   }
 };
