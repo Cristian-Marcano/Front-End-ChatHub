@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { SocketProvider } from '../../../context/SocketContext';
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem('token');
@@ -7,7 +8,11 @@ const ProtectedRoute = () => {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <SocketProvider>
+      <Outlet />
+    </SocketProvider>
+  );
 };
 
 export default ProtectedRoute;

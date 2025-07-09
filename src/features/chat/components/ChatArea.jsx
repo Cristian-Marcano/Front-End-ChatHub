@@ -1,16 +1,13 @@
+import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import ChatHeader from './chat-area/ChatHeader';
 import MessageList from './chat-area/MessageList';
 import MessageInput from './chat-area/MessageInput';
 
 const ChatArea = ({ activeChat }) => {
-  // Mock data for messages
-  const dummyMessages = activeChat ? [
-    { id: 1, content: 'Hola, ¿cómo estás?', time: '10:45 AM', senderId: activeChat.id !== 1 ? activeChat.id : 2 },
-    { id: 2, content: '¡Todo bien! Trabajando en el proyecto. ¿Y tú?', time: '10:46 AM', senderId: 'me', status: 'read' }
-  ] : [];
+  const { messages, sendMessage } = useChatSocket(activeChat?.id);
 
   const handleSendMessage = (content) => {
-    console.log("Sending:", content, "to", activeChat?.name);
+    sendMessage(content);
   };
 
   return (
@@ -25,8 +22,9 @@ const ChatArea = ({ activeChat }) => {
             onOptions={() => console.log('Chat options')}
           />
           <MessageList 
-            messages={dummyMessages}
-            currentUserId="me"
+            messages={messages}
+            currentUserId="me" 
+            // In a real app we'd compare msg.senderId with our actual userId
           />
           <MessageInput 
             onSend={handleSendMessage}
