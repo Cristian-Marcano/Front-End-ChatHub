@@ -23,13 +23,20 @@ export const useUserSocket = () => {
   const searchUsers = useCallback((query) => {
     if (socket && isConnected && query.trim()) {
       setIsSearching(true);
-      // The backend validates either username or email. We will pass both with the query string.
-      socket.emit('user:search', { 
-        username: query,
-        email: query, 
+      
+      const isEmail = query.includes('@');
+      const payload = {
         page: 1, 
-        pageSize: 15 
-      });
+        pageSize: 15
+      };
+      
+      if (isEmail) {
+        payload.email = query.trim();
+      } else {
+        payload.username = query.trim();
+      }
+      
+      socket.emit('user:search', payload);
     } else {
       setSearchResults([]);
       setIsSearching(false);
