@@ -4,6 +4,7 @@ import { authService } from '../../auth/services/authService';
 import { profileService } from '../../profile/services/profileService';
 import { useFriendshipSocket } from '../../../hooks/socket/useFriendshipSocket';
 import { useUserSocket } from '../../../hooks/socket/useUserSocket';
+import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import SidebarHeader from './sidebar/SidebarHeader';
 import SidebarSearch from './sidebar/SidebarSearch';
 import ChatList from './sidebar/ChatList';
@@ -16,8 +17,9 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
   const [showRequests, setShowRequests] = useState(false);
   
   // Sockets
-  const { friendships, requests, loadFriendships, loadRequests, sendRequest, acceptRequest, rejectRequest } = useFriendshipSocket();
+  const { requests, loadRequests, sendRequest, acceptRequest, rejectRequest } = useFriendshipSocket();
   const { searchResults, searchUsers, isSearching } = useUserSocket();
+  const { chats, loadChats } = useChatSocket(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -33,9 +35,9 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
     };
     fetchProfile();
     
-    loadFriendships();
+    loadChats();
     loadRequests();
-  }, [loadFriendships, loadRequests]);
+  }, [loadChats, loadRequests]);
 
   // Handle Debounced Search
   useEffect(() => {
@@ -57,14 +59,14 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
     }
   };
 
-  const mappedChats = friendships && friendships.length > 0 
-    ? friendships.map(f => ({
-        id: f.chatId, 
-        name: f.friend_name || f.username, 
-        lastMessage: f.last_message || 'Sin mensajes', 
-        time: f.time || '', 
-        unread: f.unread || 0,
-        photo: f.photo 
+  const mappedChats = chats && chats.length > 0 
+    ? chats.map(c => ({
+        id: c.id, 
+        name: c.nickname || "Usuario", 
+        lastMessage: 'Sin mensajes', // Temporarily hardcoded until we parse the nested msg_text
+        time: c.create_at || '', 
+        unread: 0,
+        photo: c.photo 
       }))
     : [];
 
@@ -141,7 +143,10 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
         <FriendRequestsModal 
           requests={requests} 
           onClose={() => setShowRequests(false)} 
-          onAccept={acceptRequest}
+          onAccept={(id) => {
+             acceptRequest(id);
+             setTimeout(() => loadChats(), 500); // Reload chats after accepting
+          }}
           onReject={rejectRequest}
         />
       )}

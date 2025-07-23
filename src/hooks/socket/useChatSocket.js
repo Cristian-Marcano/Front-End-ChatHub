@@ -4,15 +4,25 @@ import { useSocket } from '../../context/SocketContext';
 export const useChatSocket = (activeChatId) => {
   const { socket, isConnected } = useSocket();
   const [messages, setMessages] = useState([]);
+  const [chats, setChats] = useState([]);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
 
     socket.on('chat:results', (data) => {
-      // Chat history response
       if (data.results && Array.isArray(data.results)) {
-        console.log("Chat history loaded:", data.results);
-        setMessages(data.results);
+        if (data.results.length === 0) return;
+        
+        // Distinguish between chat history and chat list
+        // Chat list has 'nickname' or 'chat_type', history has 'msg_text' or 'chat_id'
+        const first = data.results[0];
+        if (first.nickname !== undefined || first.chat_type !== undefined) {
+          console.log("Chat list loaded:", data.results);
+          setChats(data.results);
+        } else {
+          console.log("Chat history loaded:", data.results);
+          setMessages(data.results);
+        }
       }
     });
 
@@ -45,6 +55,13 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [activeChatId, socket, isConnected]);
 
+  const loadChats = useCallback(() => {
+    if (socket && isConnected) {
+      // Backend validates pagination for this
+      socket.emit('chat:getAll', { page: 1, pageSize: 20 });
+    }
+  }, [socket, isConnected]);
+
   const sendMessage = useCallback((content) => {
     if (socket && activeChatId) {
       socket.emit('chat:sendMessage', { chatId: activeChatId, content });
@@ -63,5 +80,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { messages, sendMessage, setTyping, readMessage };
+  return { chats, messages, loadChats, sendMessage, setTyping, readMessage };
 };
