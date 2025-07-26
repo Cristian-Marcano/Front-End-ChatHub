@@ -8,9 +8,11 @@ const handleResponse = async (response) => {
     throw new Error('Sesión expirada. Por favor inicie sesión nuevamente.');
   }
 
-  const result = await response.json();
+  const result = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(result.message || 'Error en la petición');
+    const error = new Error(result.message || 'Error en la petición');
+    error.status = response.status;
+    throw error;
   }
   return result;
 };
@@ -35,6 +37,19 @@ export const profileService = {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(profileData)
+    });
+
+    return handleResponse(response);
+  },
+
+  async updateSettings(token, settingsData) {
+    const response = await fetch(`${ENV.API_URL}/api/users/settings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(settingsData)
     });
 
     return handleResponse(response);

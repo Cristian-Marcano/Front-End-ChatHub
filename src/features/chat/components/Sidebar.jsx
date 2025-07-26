@@ -30,7 +30,11 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
           setUserProfile(profile);
         }
       } catch (error) {
-        console.error("Failed to load profile", error);
+        if (error.response?.status === 404 || error.status === 404) {
+          navigate('/setup');
+        } else {
+          console.error("Failed to load profile", error);
+        }
       }
     };
     fetchProfile();
@@ -78,7 +82,7 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
     <div className="w-1/3 min-w-[320px] max-w-[450px] border-r-4 border-black flex flex-col bg-bg-light z-10 relative">
       <SidebarHeader 
         userProfile={userProfile}
-        onProfileClick={() => navigate('/profile')}
+        onProfileClick={() => navigate('/settings')}
         onOptions={() => setShowRequests(true)} // Open requests on options click for now
         onLogout={handleLogout}
         requestsCount={requests.length}

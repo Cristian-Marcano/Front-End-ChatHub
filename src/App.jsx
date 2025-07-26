@@ -9,7 +9,7 @@ import {
   PublicRoute
 } from './features/auth';
 import { ChatLayout } from './features/chat';
-import { ProfileForm } from './features/profile';
+import { ProfileForm, SettingsForm } from './features/profile';
 import { NotFound } from './components/ui';
 
 const App = () => {
@@ -19,11 +19,14 @@ const App = () => {
         {/* Rutas Privadas (Requieren estar logueado) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<ChatLayout />} />
-          <Route path="/profile" element={
-            <div className="min-h-screen bg-bg-light">
-               <ProfileForm onCancel={() => window.location.href = '/'} />
+          <Route path="/setup" element={
+            <div className="min-h-screen bg-bg-light flex items-center justify-center p-4">
+              <div className="w-full max-w-md">
+                 <ProfileForm onSuccess={() => window.location.href = '/'} />
+              </div>
             </div>
           } />
+          <Route path="/settings" element={<SettingsForm />} />
         </Route>
 
         {/* Rutas Públicas (Solo accesibles si NO estás logueado) */}

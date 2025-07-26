@@ -5,7 +5,7 @@ import AvatarEditor from './AvatarEditor';
 import { AvatarPreview } from './AvatarPreview';
 import { Edit2 } from 'lucide-react';
 
-const ProfileForm = ({ onSuccess, onCancel }) => {
+const ProfileForm = ({ onSuccess }) => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const {
     register,
@@ -71,15 +71,6 @@ const ProfileForm = ({ onSuccess, onCancel }) => {
         </div>
 
         <div className="flex gap-4 mt-2">
-          {onCancel && (
-            <button 
-              type="button"
-              onClick={onCancel}
-              className="flex-1 bg-white border-2 border-black py-3 font-black text-black rounded-sm shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
-            >
-              Cancelar
-            </button>
-          )}
           <SubmitButton disabled={isLoading}>
             {isLoading ? 'Guardando...' : 'Guardar Perfil'}
           </SubmitButton>
