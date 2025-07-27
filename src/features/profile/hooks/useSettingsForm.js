@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { profileService } from '../services/profileService';
-import { DEFAULT_AVATAR_CONFIG } from '../components/AvatarEditor';
 
 const settingsSchema = z.object({
   username: z.string().min(4, 'Mínimo 4 caracteres').max(30, 'Máximo 30 caracteres'),
@@ -18,7 +17,7 @@ export const useSettingsForm = (onSuccess) => {
   const [isFetching, setIsFetching] = useState(true);
   const [apiError, setApiError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
-  const [avatarConfig, setAvatarConfig] = useState(DEFAULT_AVATAR_CONFIG);
+  const [avatarConfig, setAvatarConfig] = useState(null);
 
   const {
     register,
