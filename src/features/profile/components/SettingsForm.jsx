@@ -35,7 +35,7 @@ const SettingsForm = () => {
 
   return (
     <div className="min-h-screen bg-bg-light flex items-center justify-center py-10 px-4">
-      <div className="w-full max-w-2xl relative">
+      <div className="w-full max-w-4xl relative">
         <button 
           onClick={() => navigate('/')}
           className="absolute -top-12 left-0 flex items-center gap-2 font-bold hover:underline"
