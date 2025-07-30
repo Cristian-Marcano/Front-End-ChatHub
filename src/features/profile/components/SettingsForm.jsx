@@ -13,6 +13,7 @@ const SettingsForm = () => {
   const {
     register,
     handleSubmit,
+    watch,
     errors,
     onSubmit,
     isLoading,
@@ -33,6 +34,8 @@ const SettingsForm = () => {
     );
   }
 
+  const currentUsername = watch('username');
+
   return (
     <Card title="Ajustes de Perfil" className="max-w-4xl relative">
       <button 
@@ -50,6 +53,7 @@ const SettingsForm = () => {
                 <div className="relative group cursor-pointer" onClick={() => setIsEditorOpen(true)}>
                   <AvatarPreview 
                     config={avatarConfig} 
+                    name={currentUsername}
                     className="w-40 h-40 rounded-sm group-hover:-translate-y-1 group-hover:-translate-x-1 transition-transform" 
                   />
                   <div className="absolute -bottom-2 -right-2 bg-yellow-300 border-2 border-black p-2 rounded-sm shadow-[2px_2px_0px_0px_#000] group-hover:bg-yellow-400 transition-colors">

@@ -23,6 +23,7 @@ export const useSettingsForm = (onSuccess) => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors }
   } = useForm({
     resolver: zodResolver(settingsSchema)
@@ -42,7 +43,8 @@ export const useSettingsForm = (onSuccess) => {
 
         if (data.photo) {
           try {
-            setAvatarConfig(JSON.parse(data.photo));
+            const config = typeof data.photo === 'string' ? JSON.parse(data.photo) : data.photo;
+            setAvatarConfig(config);
           } catch (e) {
             console.error('Error parsing avatar config', e);
           }
@@ -85,6 +87,7 @@ export const useSettingsForm = (onSuccess) => {
   return {
     register,
     handleSubmit,
+    watch,
     errors,
     onSubmit,
     isLoading,
