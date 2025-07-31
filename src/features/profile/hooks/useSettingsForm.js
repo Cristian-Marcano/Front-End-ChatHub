@@ -18,13 +18,14 @@ export const useSettingsForm = (onSuccess) => {
   const [apiError, setApiError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [avatarConfig, setAvatarConfig] = useState(null);
-
+  const [originalData, setOriginalData] = useState(null);
+  
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors }
+    formState: { errors, dirtyFields }
   } = useForm({
     resolver: zodResolver(settingsSchema)
   });
@@ -35,6 +36,7 @@ export const useSettingsForm = (onSuccess) => {
         const token = localStorage.getItem('token');
         const data = await profileService.getProfile(token);
         
+        setOriginalData(data);
         setValue('username', data.username || '');
         setValue('email', data.email || '');
         setValue('full_name', data.full_name || '');
@@ -66,13 +68,32 @@ export const useSettingsForm = (onSuccess) => {
       setSuccessMsg(null);
       const token = localStorage.getItem('token');
 
-      const payload = {
-        ...data,
-        photo: JSON.stringify(avatarConfig)
-      };
+      const payload = {};
+      Object.keys(dirtyFields).forEach(key => {
+        payload[key] = data[key];
+      });
+
+      // Track if avatar changed
+      let originalAvatar = null;
+      if (originalData?.photo) {
+        try {
+          originalAvatar = typeof originalData.photo === 'string' ? JSON.parse(originalData.photo) : originalData.photo;
+        } catch(e) {}
+      }
+      if (JSON.stringify(originalAvatar) !== JSON.stringify(avatarConfig)) {
+        payload.photo = avatarConfig || null;
+      }
+
+      if (Object.keys(payload).length === 0) {
+        setSuccessMsg('No hay cambios para guardar');
+        return;
+      }
 
       await profileService.updateSettings(token, payload);
       setSuccessMsg('Ajustes guardados correctamente');
+      
+      // Update originalData so further clicks to Save don't resend
+      setOriginalData(prev => ({ ...prev, ...payload }));
       
       if (onSuccess) {
         onSuccess(payload);
