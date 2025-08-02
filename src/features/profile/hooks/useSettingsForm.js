@@ -70,7 +70,9 @@ export const useSettingsForm = (onSuccess) => {
 
       const payload = {};
       Object.keys(dirtyFields).forEach(key => {
-        payload[key] = data[key];
+        if (key !== 'email') {
+          payload[key] = data[key];
+        }
       });
 
       // Track if avatar changed
@@ -84,19 +86,27 @@ export const useSettingsForm = (onSuccess) => {
         payload.photo = avatarConfig || null;
       }
 
-      if (Object.keys(payload).length === 0) {
-        setSuccessMsg('No hay cambios para guardar');
-        return;
+      const hasOtherChanges = Object.keys(payload).length > 0;
+
+      if (hasOtherChanges) {
+        await profileService.updateSettings(token, payload);
+        setOriginalData(prev => ({ ...prev, ...payload }));
       }
 
-      await profileService.updateSettings(token, payload);
-      setSuccessMsg('Ajustes guardados correctamente');
-      
-      // Update originalData so further clicks to Save don't resend
-      setOriginalData(prev => ({ ...prev, ...payload }));
-      
-      if (onSuccess) {
-        onSuccess(payload);
+      // Check if email was changed
+      if (dirtyFields.email && data.email !== originalData?.email) {
+        if (onSuccess) {
+          onSuccess({ ...payload, email: data.email }, true); // true = email changed
+        }
+      } else {
+        if (hasOtherChanges) {
+          setSuccessMsg('Ajustes guardados correctamente');
+        } else {
+          setSuccessMsg('No hay cambios para guardar');
+        }
+        if (onSuccess && hasOtherChanges) {
+          onSuccess(payload, false);
+        }
       }
     } catch (error) {
       setApiError(error.message);
@@ -118,6 +128,7 @@ export const useSettingsForm = (onSuccess) => {
     successMsg,
     setSuccessMsg,
     avatarConfig,
-    setAvatarConfig
+    setAvatarConfig,
+    originalData
   };
 };

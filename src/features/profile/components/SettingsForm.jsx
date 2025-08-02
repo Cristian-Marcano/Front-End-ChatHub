@@ -2,14 +2,26 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
 import { useSettingsForm } from '../hooks/useSettingsForm';
+import { useEmailChange } from '../hooks/useEmailChange';
+import { usePasswordChange } from '../hooks/usePasswordChange';
 import AvatarEditor from './AvatarEditor';
 import { AvatarPreview } from './AvatarPreview';
+import { EmailChangeModal } from './EmailChangeModal';
+import { PasswordChangeModal } from './PasswordChangeModal';
 import { Edit2, ArrowLeft } from 'lucide-react';
 
 const SettingsForm = () => {
   const navigate = useNavigate();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   
+  const emailChange = useEmailChange();
+  
+  const handleSettingsSuccess = (payload, isEmailChanged) => {
+    if (isEmailChanged) {
+      emailChange.initChange(payload.email);
+    }
+  };
+
   const {
     register,
     handleSubmit,
@@ -23,8 +35,11 @@ const SettingsForm = () => {
     successMsg,
     setSuccessMsg,
     avatarConfig,
-    setAvatarConfig
-  } = useSettingsForm();
+    setAvatarConfig,
+    originalData
+  } = useSettingsForm(handleSettingsSuccess);
+
+  const passwordChange = usePasswordChange(originalData?.email);
 
   if (isFetching) {
     return (
@@ -78,6 +93,16 @@ const SettingsForm = () => {
                   disabled={isLoading}
                   {...register('email')}
                 />
+                
+                <h3 className="font-black border-b-2 border-black pb-1 mt-2">Seguridad</h3>
+                <button
+                  type="button"
+                  onClick={() => passwordChange.initChange()}
+                  disabled={passwordChange.isLoading}
+                  className="py-2 px-4 w-full text-left font-bold border-2 border-black rounded-sm shadow-[4px_4px_0px_0px_#000] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#000] transition-all bg-white"
+                >
+                  {passwordChange.isLoading ? 'Enviando correo...' : 'Cambiar Contraseña'}
+                </button>
               </div>
             </div>
 
@@ -130,6 +155,36 @@ const SettingsForm = () => {
               onCancel={() => setIsEditorOpen(false)}
             />
           )}
+
+          <EmailChangeModal 
+            isOpen={emailChange.isOpen}
+            oldEmail={originalData?.email}
+            newEmail={emailChange.newEmail}
+            oldCode={emailChange.oldCode}
+            setOldCode={emailChange.setOldCode}
+            newCode={emailChange.newCode}
+            setNewCode={emailChange.setNewCode}
+            isLoading={emailChange.isLoading}
+            error={emailChange.error}
+            onVerify={() => emailChange.verifyChange((newEmail) => {
+              setSuccessMsg('¡Correo actualizado exitosamente!');
+            })}
+            onCancel={emailChange.cancel}
+          />
+
+          <PasswordChangeModal 
+            isOpen={passwordChange.isOpen}
+            token={passwordChange.token}
+            setToken={passwordChange.setToken}
+            newPassword={passwordChange.newPassword}
+            setNewPassword={passwordChange.setNewPassword}
+            isLoading={passwordChange.isLoading}
+            error={passwordChange.error}
+            onVerify={() => passwordChange.verifyChange(() => {
+              setSuccessMsg('¡Contraseña actualizada exitosamente!');
+            })}
+            onCancel={passwordChange.cancel}
+          />
 
           <Toast message={apiError} type="error" onClose={() => setApiError(null)} />
           <Toast message={successMsg} type="success" onClose={() => setSuccessMsg(null)} />
