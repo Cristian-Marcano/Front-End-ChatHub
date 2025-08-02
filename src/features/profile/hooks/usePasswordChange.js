@@ -54,7 +54,7 @@ export const usePasswordChange = (email) => {
         },
         body: JSON.stringify({
           token,
-          password: newPassword
+          newPassword: newPassword
         })
       });
 
