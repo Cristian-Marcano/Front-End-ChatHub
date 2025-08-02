@@ -18,7 +18,7 @@ export const usePasswordChange = (email) => {
       setError(null);
       setSuccessMsg(null);
 
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
+      const response = await fetch(`${API_URL}/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ export const usePasswordChange = (email) => {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_URL}/auth/reset-password`, {
+      const response = await fetch(`${API_URL}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

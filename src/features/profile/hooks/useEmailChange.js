@@ -19,7 +19,7 @@ export const useEmailChange = (originalEmail) => {
       setNewEmail(email);
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/users/change-email/init`, {
+      const response = await fetch(`${API_URL}/api/users/change-email/init`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const useEmailChange = (originalEmail) => {
       setError(null);
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/users/change-email/verify`, {
+      const response = await fetch(`${API_URL}/api/users/change-email/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
