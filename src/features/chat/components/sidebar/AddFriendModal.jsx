@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { UserPlus, Search, X } from 'lucide-react';
 import { InputField } from '../../../../components/ui';
 import { useUserSocket } from '../../../../hooks/socket/useUserSocket';
@@ -18,13 +19,11 @@ const AddFriendModal = ({ onClose }) => {
 
   const handleSendRequest = (userId) => {
     sendRequest(userId);
-    // Optionally close the modal after sending, or keep it open so they can add more.
-    // Let's keep it open but show some feedback. For simplicity, we just trigger it.
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-white p-6 md:p-8 rounded-sm border-4 border-black shadow-[8px_8px_0px_0px_#000] w-full max-w-md max-h-[80vh] flex flex-col">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+      <div className="bg-white p-6 md:p-8 rounded-sm border-4 border-black shadow-[8px_8px_0px_0px_#000] w-full max-w-xl h-[80vh] flex flex-col">
         
         <div className="flex justify-between items-center border-b-2 border-black pb-4 mb-4">
           <h3 className="text-2xl font-black uppercase flex items-center gap-2">
@@ -83,7 +82,8 @@ const AddFriendModal = ({ onClose }) => {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
