@@ -1,8 +1,8 @@
-import { MessageSquarePlus, MoreVertical, LogOut, Bell } from 'lucide-react';
+import { MessageSquarePlus, UserPlus, LogOut, Bell } from 'lucide-react';
 import ChatAvatar from '../ui/ChatAvatar';
 import ChatIconButton from '../ui/ChatIconButton';
 
-const SidebarHeader = ({ onProfileClick, onNewChat, onOptions, onLogout, userProfile, requestsCount = 0 }) => {
+const SidebarHeader = ({ onProfileClick, onNewChat, onAddFriend, onOptions, onLogout, userProfile, requestsCount = 0 }) => {
   return (
     <div className="h-16 border-b-4 border-black bg-white flex items-center justify-between px-4 shrink-0">
       <ChatAvatar 
@@ -20,7 +20,7 @@ const SidebarHeader = ({ onProfileClick, onNewChat, onOptions, onLogout, userPro
             </span>
           )}
         </div>
-        <ChatIconButton icon={MessageSquarePlus} onClick={onNewChat} title="Nuevo chat" />
+        <ChatIconButton icon={UserPlus} onClick={onAddFriend} title="Agregar Usuario" />
         <ChatIconButton icon={LogOut} onClick={onLogout} title="Cerrar Sesión" color="text-red-500" hoverColor="text-red-600" />
       </div>
     </div>

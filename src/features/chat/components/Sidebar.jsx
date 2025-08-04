@@ -3,22 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../auth/services/authService';
 import { profileService } from '../../profile/services/profileService';
 import { useFriendshipSocket } from '../../../hooks/socket/useFriendshipSocket';
-import { useUserSocket } from '../../../hooks/socket/useUserSocket';
 import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import SidebarHeader from './sidebar/SidebarHeader';
 import SidebarSearch from './sidebar/SidebarSearch';
 import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
+import AddFriendModal from './sidebar/AddFriendModal';
 
 const Sidebar = ({ activeChatId, onChatSelect }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [userProfile, setUserProfile] = useState(null);
   const [showRequests, setShowRequests] = useState(false);
+  const [showAddFriend, setShowAddFriend] = useState(false);
   
   // Sockets
-  const { requests, loadRequests, sendRequest, acceptRequest, rejectRequest } = useFriendshipSocket();
-  const { searchResults, searchUsers, isSearching } = useUserSocket();
+  const { requests, loadRequests, acceptRequest, rejectRequest } = useFriendshipSocket();
   const { chats, loadChats } = useChatSocket(null);
 
   useEffect(() => {
@@ -42,13 +42,6 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
     loadChats();
     loadRequests();
   }, [loadChats, loadRequests]);
-
-  // Handle Debounced Search
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      searchUsers(searchQuery);
-    }
-  }, [searchQuery, searchUsers]);
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
@@ -83,7 +76,8 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
       <SidebarHeader 
         userProfile={userProfile}
         onProfileClick={() => navigate('/settings')}
-        onOptions={() => setShowRequests(true)} // Open requests on options click for now
+        onOptions={() => setShowRequests(true)}
+        onAddFriend={() => setShowAddFriend(true)}
         onLogout={handleLogout}
         requestsCount={requests.length}
       />
@@ -93,55 +87,27 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
         onChange={setSearchQuery}
       />
       
-      {/* Search Layout */}
-      {searchQuery.trim() ? (
-        <div className="flex-1 overflow-y-auto">
-          {localFilteredChats.length > 0 && (
-             <div>
-               <div className="bg-gray-200 border-b-2 border-y-2 border-black px-3 py-1 text-xs font-black">Tus Chats</div>
-               <ChatList 
-                 chats={localFilteredChats}
-                 activeChatId={activeChatId}
-                 onChatSelect={onChatSelect}
-                 hideEmptyMessage={true}
-               />
-             </div>
-          )}
-          
-          <div>
-            <div className="bg-gray-200 border-b-2 border-y-2 border-black px-3 py-1 text-xs font-black">Búsqueda Global</div>
-            {isSearching ? (
-              <div className="p-4 text-center font-bold text-gray-500">Buscando...</div>
-            ) : searchResults.length > 0 ? (
-              searchResults.map(user => (
-                 <div key={user.id} className="flex items-center justify-between p-3 border-b-2 border-black hover:bg-white transition-colors">
-                   <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 bg-blue-300 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000]"></div>
-                     <div>
-                       <p className="font-bold text-black">{user.username}</p>
-                       <p className="text-xs text-gray-600">{user.email}</p>
-                     </div>
-                   </div>
-                   <button 
-                     onClick={() => sendRequest(user.id)}
-                     className="bg-primary text-white text-xs font-bold px-3 py-1 border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer"
-                   >
-                     Añadir
-                   </button>
-                 </div>
-              ))
-            ) : (
-              <div className="p-4 text-center font-bold text-gray-500">No se encontraron usuarios.</div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <ChatList 
-          chats={mappedChats}
-          activeChatId={activeChatId}
-          onChatSelect={onChatSelect}
-        />
-      )}
+      <div className="flex-1 overflow-y-auto">
+        {searchQuery.trim() ? (
+          localFilteredChats.length > 0 ? (
+            <ChatList 
+              chats={localFilteredChats}
+              activeChatId={activeChatId}
+              onChatSelect={onChatSelect}
+            />
+          ) : (
+            <div className="p-4 text-center font-bold text-gray-500">
+              No se encontraron chats con "{searchQuery}"
+            </div>
+          )
+        ) : (
+          <ChatList 
+            chats={mappedChats}
+            activeChatId={activeChatId}
+            onChatSelect={onChatSelect}
+          />
+        )}
+      </div>
 
       {showRequests && (
         <FriendRequestsModal 
@@ -152,6 +118,12 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
              setTimeout(() => loadChats(), 500); // Reload chats after accepting
           }}
           onReject={rejectRequest}
+        />
+      )}
+
+      {showAddFriend && (
+        <AddFriendModal 
+          onClose={() => setShowAddFriend(false)} 
         />
       )}
     </div>
