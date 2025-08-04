@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Card, InputField, SubmitButton } from '../../../components/ui';
 import { useProfileForm } from '../hooks/useProfileForm';
 import AvatarEditor from './AvatarEditor';
 import { AvatarPreview } from './AvatarPreview';
@@ -13,10 +13,6 @@ const ProfileForm = ({ onSuccess }) => {
     errors,
     onSubmit,
     isLoading,
-    apiError,
-    setApiError,
-    successMsg,
-    setSuccessMsg,
     avatarConfig,
     setAvatarConfig
   } = useProfileForm(onSuccess);
@@ -88,9 +84,7 @@ const ProfileForm = ({ onSuccess }) => {
         />
       )}
 
-      <Toast message={apiError} type="error" onClose={() => setApiError(null)} />
-      <Toast message={successMsg} type="success" onClose={() => setSuccessMsg(null)} />
-    </Card>
+      </Card>
   );
 };
 

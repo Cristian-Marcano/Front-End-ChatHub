@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Card, InputField, SubmitButton } from '../../../components/ui';
 import { useSettingsForm } from '../hooks/useSettingsForm';
 import { useEmailChange } from '../hooks/useEmailChange';
 import { usePasswordChange } from '../hooks/usePasswordChange';
@@ -30,10 +30,6 @@ const SettingsForm = () => {
     onSubmit,
     isLoading,
     isFetching,
-    apiError,
-    setApiError,
-    successMsg,
-    setSuccessMsg,
     avatarConfig,
     setAvatarConfig,
     originalData
@@ -186,9 +182,7 @@ const SettingsForm = () => {
             onCancel={passwordChange.cancel}
           />
 
-          <Toast message={apiError} type="error" onClose={() => setApiError(null)} />
-          <Toast message={successMsg} type="success" onClose={() => setSuccessMsg(null)} />
-      </Card>
+          </Card>
   );
 };
 

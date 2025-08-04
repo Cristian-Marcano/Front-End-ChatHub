@@ -16,7 +16,6 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [showRequests, setShowRequests] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
-  
   // Sockets
   const { requests, loadRequests, acceptRequest, rejectRequest } = useFriendshipSocket();
   const { chats, loadChats } = useChatSocket(null);

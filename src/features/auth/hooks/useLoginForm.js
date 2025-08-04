@@ -1,3 +1,4 @@
+import { toast } from "../../../utils/toast";
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +10,6 @@ import { profileService } from '../../profile/services/profileService';
 export const useLoginForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState(null);
 
   const {
     register,
@@ -21,7 +21,6 @@ export const useLoginForm = () => {
 
     const onSubmit = async (data) => {
     setIsLoading(true);
-    setApiError(null);
     try {
       const payload = { email: data.email, password: data.password };
       const response = await authService.login(payload);
@@ -48,7 +47,7 @@ export const useLoginForm = () => {
       
     } catch (error) {
       console.error('Error en login:', error);
-      setApiError(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +59,5 @@ export const useLoginForm = () => {
     errors,
     onSubmit,
     isLoading,
-    apiError,
-    setApiError
   };
 };

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Card, InputField, SubmitButton, Toast, OTPInput } from '../../../components/ui';
+import { Card, InputField, SubmitButton, OTPInput } from '../../../components/ui';
 import { useVerifyEmailForm } from '../hooks/useVerifyEmailForm';
 
 const VerifyEmailForm = () => {
@@ -18,9 +18,7 @@ const VerifyEmailForm = () => {
     watch,
     errors, 
     onSubmit, 
-    isLoading, 
-    apiError, 
-    setApiError
+    isLoading
   } = useVerifyEmailForm(email, handleSuccess);
 
   const codeValue = watch('code') || '';
@@ -66,12 +64,7 @@ const VerifyEmailForm = () => {
         </SubmitButton>
       </form>
 
-      <Toast 
-        message={apiError} 
-        type="error" 
-        onClose={() => setApiError(null)} 
-      />
-    </Card>
+      </Card>
   );
 };
 

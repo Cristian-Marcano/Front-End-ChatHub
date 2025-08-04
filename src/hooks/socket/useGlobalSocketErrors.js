@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSocket } from '../../context/SocketContext';
+import { toast } from '../../utils/toast';
 
 export const useGlobalSocketErrors = () => {
   const { socket } = useSocket();
-  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     if (!socket) return;
 
     const handleValidateError = (data) => {
       console.error("Socket Validation Error:", data.error);
-      setErrorMsg(data.error?.message || 'Error de validación en la solicitud');
+      toast.error(data.error?.message || 'Error de validación en la solicitud');
     };
 
     const handleServerError = (data) => {
       console.error("Socket Server Error:", data);
-      setErrorMsg(data.message || 'Error del servidor');
+      toast.error(data.message || 'Error del servidor');
     };
 
     socket.on('error:validate', handleValidateError);
@@ -27,5 +27,5 @@ export const useGlobalSocketErrors = () => {
     };
   }, [socket]);
 
-  return { errorMsg, setErrorMsg };
+  return {};
 };

@@ -1,3 +1,4 @@
+import { toast } from "../../../utils/toast";
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -10,13 +11,12 @@ export const usePasswordChange = (email) => {
   const [newPassword, setNewPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
 
   const initChange = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      setSuccessMsg(null);
+      toast.success(null);
 
       const response = await fetch(`${API_URL}/forgot-password`, {
         method: 'POST',
@@ -97,7 +97,6 @@ export const usePasswordChange = (email) => {
     isLoading,
     error,
     setError,
-    successMsg,
     setSuccessMsg,
     initChange,
     verifyChange,

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Card, InputField, SubmitButton } from '../../../components/ui';
 import { useForgotPasswordForm } from '../hooks/useForgotPasswordForm';
 
 const ForgotPasswordForm = () => {
@@ -14,11 +14,7 @@ const ForgotPasswordForm = () => {
     handleSubmit, 
     errors, 
     onSubmit, 
-    isLoading, 
-    apiError, 
-    setApiError,
-    successMsg,
-    setSuccessMsg
+    isLoading
   } = useForgotPasswordForm(handleSuccess);
 
   return (
@@ -57,18 +53,7 @@ const ForgotPasswordForm = () => {
         </Link>
       </form>
 
-      <Toast 
-        message={apiError} 
-        type="error" 
-        onClose={() => setApiError(null)} 
-      />
-
-      <Toast 
-        message={successMsg} 
-        type="success" 
-        onClose={() => setSuccessMsg(null)} 
-      />
-    </Card>
+      </Card>
   );
 };
 

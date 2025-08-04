@@ -1,3 +1,4 @@
+import { toast } from "../../../utils/toast";
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,8 +16,6 @@ const settingsSchema = z.object({
 export const useSettingsForm = (onSuccess) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
-  const [apiError, setApiError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
   const [avatarConfig, setAvatarConfig] = useState(null);
   const [originalData, setOriginalData] = useState(null);
   
@@ -52,7 +51,7 @@ export const useSettingsForm = (onSuccess) => {
           }
         }
       } catch (error) {
-        setApiError(error.message);
+        toast.error(error.message);
       } finally {
         setIsFetching(false);
       }
@@ -64,8 +63,6 @@ export const useSettingsForm = (onSuccess) => {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      setApiError(null);
-      setSuccessMsg(null);
       const token = localStorage.getItem('token');
 
       const payload = {};
@@ -100,16 +97,16 @@ export const useSettingsForm = (onSuccess) => {
         }
       } else {
         if (hasOtherChanges) {
-          setSuccessMsg('Ajustes guardados correctamente');
+          toast.success('Ajustes guardados correctamente');
         } else {
-          setSuccessMsg('No hay cambios para guardar');
+          toast.success('No hay cambios para guardar');
         }
         if (onSuccess && hasOtherChanges) {
           onSuccess(payload, false);
         }
       }
     } catch (error) {
-      setApiError(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -123,10 +120,6 @@ export const useSettingsForm = (onSuccess) => {
     onSubmit,
     isLoading,
     isFetching,
-    apiError,
-    setApiError,
-    successMsg,
-    setSuccessMsg,
     avatarConfig,
     setAvatarConfig,
     originalData

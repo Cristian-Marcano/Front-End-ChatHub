@@ -1,33 +1,29 @@
 import { useEffect, useState } from 'react';
 
-const Toast = ({ message, type = 'error', onClose, duration = 5000 }) => {
+const Toast = ({ id, message, type = 'error', onClose, duration = 15000 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    if (message) {
-      setIsClosing(false);
-      const timer = setTimeout(() => {
-        setIsClosing(true);
-      }, duration - 400); // 400ms duration of the fade-out animation
+    setIsClosing(false);
+    const timer = setTimeout(() => {
+      setIsClosing(true);
+    }, duration - 400); // 400ms duration of the fade-out animation
 
-      return () => clearTimeout(timer);
-    }
-  }, [message, duration]);
+    return () => clearTimeout(timer);
+  }, [duration]);
 
   useEffect(() => {
     if (isClosing) {
       const timer = setTimeout(() => {
-        onClose();
+        onClose(id);
       }, 400); // Wait for the animation to finish before unmounting
       return () => clearTimeout(timer);
     }
-  }, [isClosing, onClose]);
+  }, [isClosing, onClose, id]);
 
   const handleClose = () => {
     setIsClosing(true);
   };
-
-  if (!message) return null;
 
   const bgColors = {
     error: 'bg-red-400',
@@ -36,7 +32,7 @@ const Toast = ({ message, type = 'error', onClose, duration = 5000 }) => {
   };
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 ${isClosing ? 'animate-fade-out' : 'animate-slide-in'}`}>
+    <div className={`transition-all duration-300 ${isClosing ? 'opacity-0 scale-90 -translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-slide-in'}`}>
       <div className={`px-6 py-4 flex items-center justify-between gap-6 border-4 border-black shadow-[8px_8px_0px_0px_#000] ${bgColors[type] || bgColors.info}`}>
         <p className="font-bold text-black text-lg uppercase tracking-wide">{message}</p>
         <button 

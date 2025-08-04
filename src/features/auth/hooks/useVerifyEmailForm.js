@@ -1,3 +1,4 @@
+import { toast } from "../../../utils/toast";
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,7 +7,6 @@ import { authService } from '../services/authService';
 
 export const useVerifyEmailForm = (email, onSuccess) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState(null);
 
   const {
     register,
@@ -21,7 +21,6 @@ export const useVerifyEmailForm = (email, onSuccess) => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    setApiError(null);
     try {
       await authService.verifyEmail(data);
       if (onSuccess) {
@@ -29,7 +28,7 @@ export const useVerifyEmailForm = (email, onSuccess) => {
       }
     } catch (error) {
       console.error('Error en verificación:', error);
-      setApiError(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +42,5 @@ export const useVerifyEmailForm = (email, onSuccess) => {
     errors,
     onSubmit,
     isLoading,
-    apiError,
-    setApiError
   };
 };

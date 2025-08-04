@@ -41,7 +41,7 @@ const AddFriendModal = ({ onClose }) => {
         <div className="mb-4">
           <InputField 
             type="text" 
-            placeholder="Buscar por username..." 
+            placeholder="Buscar por username o correo..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -50,7 +50,7 @@ const AddFriendModal = ({ onClose }) => {
         <div className="flex-1 overflow-y-auto border-2 border-black rounded-sm">
           {!searchQuery.trim() ? (
             <div className="p-6 text-center text-gray-500 font-bold">
-              Escribe un username para buscar usuarios.
+              Escribe un username o correo para buscar usuarios.
             </div>
           ) : isSearching ? (
             <div className="p-6 text-center text-gray-500 font-bold">
@@ -76,7 +76,7 @@ const AddFriendModal = ({ onClose }) => {
             ))
           ) : (
             <div className="p-6 text-center text-gray-500 font-bold">
-              No se encontraron usuarios con ese username.
+              No se encontraron usuarios nuevos.
             </div>
           )}
         </div>

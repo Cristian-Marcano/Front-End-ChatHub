@@ -1,3 +1,4 @@
+import { toast } from "../../../utils/toast";
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,8 +7,6 @@ import { profileService } from '../services/profileService';
 
 export const useProfileForm = (onSuccess) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
   
   // Default values
   const [avatarConfig, setAvatarConfig] = useState(null);
@@ -50,8 +49,6 @@ export const useProfileForm = (onSuccess) => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    setApiError(null);
-    setSuccessMsg(null);
     try {
       const token = localStorage.getItem('token');
       const payload = {
@@ -63,11 +60,11 @@ export const useProfileForm = (onSuccess) => {
 
       await profileService.updateProfile(token, payload);
       
-      setSuccessMsg('Perfil guardado correctamente');
+      toast.success('Perfil guardado correctamente');
       if (onSuccess) setTimeout(() => onSuccess(), 1500);
       
     } catch (error) {
-      setApiError(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -79,10 +76,6 @@ export const useProfileForm = (onSuccess) => {
     errors,
     onSubmit,
     isLoading,
-    apiError,
-    setApiError,
-    successMsg,
-    setSuccessMsg,
     avatarConfig,
     setAvatarConfig
   };

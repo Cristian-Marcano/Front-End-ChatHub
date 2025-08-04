@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Card, InputField, SubmitButton } from '../../../components/ui';
 import { useLoginForm } from '../hooks/useLoginForm';
 
 const LoginForm = () => {
-  const { register, handleSubmit, errors, onSubmit, isLoading, apiError, setApiError } = useLoginForm();
+  const { register, handleSubmit, errors, onSubmit, isLoading } = useLoginForm();
 
   return (
     <Card title="Iniciar Sesión">
@@ -46,12 +46,7 @@ const LoginForm = () => {
         </SubmitButton>
       </form>
 
-      <Toast 
-        message={apiError} 
-        type="error" 
-        onClose={() => setApiError(null)} 
-      />
-    </Card>
+      </Card>
   );
 };
 

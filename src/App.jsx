@@ -10,11 +10,12 @@ import {
 } from './features/auth';
 import { ChatLayout } from './features/chat';
 import { ProfileForm, SettingsForm } from './features/profile';
-import { NotFound } from './components/ui';
+import { NotFound, ToastContainer } from './components/ui';
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         {/* Rutas Privadas (Requieren estar logueado) */}
         <Route element={<ProtectedRoute />}>
