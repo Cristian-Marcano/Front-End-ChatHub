@@ -9,6 +9,7 @@ import { AvatarPreview } from './AvatarPreview';
 import { EmailChangeModal } from './EmailChangeModal';
 import { PasswordChangeModal } from './PasswordChangeModal';
 import { Edit2, ArrowLeft } from 'lucide-react';
+import { toast } from '../../../utils/toast';
 
 const SettingsForm = () => {
   const navigate = useNavigate();
@@ -163,7 +164,7 @@ const SettingsForm = () => {
             isLoading={emailChange.isLoading}
             error={emailChange.error}
             onVerify={() => emailChange.verifyChange((newEmail) => {
-              setSuccessMsg('¡Correo actualizado exitosamente!');
+              toast.success('¡Correo actualizado exitosamente!');
             })}
             onCancel={emailChange.cancel}
           />
@@ -177,7 +178,7 @@ const SettingsForm = () => {
             isLoading={passwordChange.isLoading}
             error={passwordChange.error}
             onVerify={() => passwordChange.verifyChange(() => {
-              setSuccessMsg('¡Contraseña actualizada exitosamente!');
+              toast.success('¡Contraseña actualizada exitosamente!');
             })}
             onCancel={passwordChange.cancel}
           />
