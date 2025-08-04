@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Card, InputField, SubmitButton, Toast } from '../../../components/ui';
+import { Card, InputField, SubmitButton, Toast, OTPInput } from '../../../components/ui';
 import { useVerifyEmailForm } from '../hooks/useVerifyEmailForm';
 
 const VerifyEmailForm = () => {
@@ -13,13 +13,17 @@ const VerifyEmailForm = () => {
 
   const { 
     register, 
-    handleSubmit, 
+    handleSubmit,
+    setValue,
+    watch,
     errors, 
     onSubmit, 
     isLoading, 
     apiError, 
     setApiError
   } = useVerifyEmailForm(email, handleSuccess);
+
+  const codeValue = watch('code') || '';
 
   return (
     <Card title="Verificar Correo">
@@ -34,14 +38,19 @@ const VerifyEmailForm = () => {
           {...register('email')}
         />
 
-        <InputField 
-          type="text" 
-          placeholder="Código de 6 dígitos" 
-          error={errors.code}
-          disabled={isLoading}
-          maxLength="6"
-          {...register('code')}
-        />
+        <div className="flex flex-col items-center gap-1">
+          <OTPInput 
+            length={6}
+            value={codeValue}
+            onChange={(val) => setValue('code', val, { shouldValidate: true })}
+            disabled={isLoading}
+          />
+          {errors.code && (
+            <span className="text-red-500 font-bold text-xs self-start mt-1">
+              {errors.code.message}
+            </span>
+          )}
+        </div>
         
         <div className="flex justify-end w-full">
           <Link 

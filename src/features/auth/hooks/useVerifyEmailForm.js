@@ -11,6 +11,8 @@ export const useVerifyEmailForm = (email, onSuccess) => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(verifyEmailSchema),
@@ -36,6 +38,8 @@ export const useVerifyEmailForm = (email, onSuccess) => {
   return {
     register,
     handleSubmit,
+    setValue,
+    watch,
     errors,
     onSubmit,
     isLoading,

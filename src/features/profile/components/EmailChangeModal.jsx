@@ -1,4 +1,4 @@
-import { InputField, SubmitButton } from '../../../components/ui';
+import { SubmitButton, OTPInput } from '../../../components/ui';
 
 export const EmailChangeModal = ({ 
   isOpen, 
@@ -30,28 +30,28 @@ export const EmailChangeModal = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-6 mb-8 mt-2">
           <div>
-            <label className="block font-bold text-sm mb-1">Código enviado a {oldEmail}</label>
-            <InputField 
-              type="text" 
-              placeholder="000000" 
-              value={oldCode}
-              onChange={(e) => setOldCode(e.target.value)}
-              disabled={isLoading}
-              maxLength={6}
-            />
+            <label className="block font-bold text-sm mb-2 text-center text-gray-700">Enviado a <span className="text-black">{oldEmail}</span></label>
+            <div className="flex justify-center">
+              <OTPInput 
+                length={6}
+                value={oldCode}
+                onChange={setOldCode}
+                disabled={isLoading}
+              />
+            </div>
           </div>
           <div>
-            <label className="block font-bold text-sm mb-1">Código enviado a {newEmail}</label>
-            <InputField 
-              type="text" 
-              placeholder="000000" 
-              value={newCode}
-              onChange={(e) => setNewCode(e.target.value)}
-              disabled={isLoading}
-              maxLength={6}
-            />
+            <label className="block font-bold text-sm mb-2 text-center text-gray-700">Enviado a <span className="text-black">{newEmail}</span></label>
+            <div className="flex justify-center">
+              <OTPInput 
+                length={6}
+                value={newCode}
+                onChange={setNewCode}
+                disabled={isLoading}
+              />
+            </div>
           </div>
         </div>
 
