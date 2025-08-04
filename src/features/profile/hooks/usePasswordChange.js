@@ -16,7 +16,6 @@ export const usePasswordChange = (email) => {
     try {
       setIsLoading(true);
       setError(null);
-      toast.success(null);
 
       const response = await fetch(`${API_URL}/forgot-password`, {
         method: 'POST',
@@ -97,7 +96,6 @@ export const usePasswordChange = (email) => {
     isLoading,
     error,
     setError,
-    setSuccessMsg,
     initChange,
     verifyChange,
     cancel
