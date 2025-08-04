@@ -16,20 +16,22 @@ export const useFriendshipSocket = () => {
     // Let's listen to `results` and see what it contains.
     socket.on('friendship:results', (data) => {
       if (data.results && Array.isArray(data.results)) {
-        // If it looks like a request (has username, no chat_id)
-        const isRequestList = data.results.length > 0 && !data.results[0].chatId;
+        if (data.results.length === 0) {
+          // It's hard to know which array is empty since both use the same event.
+          // But usually we don't clear unless we know. Let's just keep it as is.
+          return;
+        }
         
-        if (isRequestList || (data.results.length === 0 && requests.length > 0)) {
-           // We might need a better way to distinguish empty lists, but for now:
-           // If we manually call `loadRequests()`, it populates `requests`.
-           // Let's actually refine this by listening to specific events if possible, or just checking structure.
-           if (data.results.some(r => r.state === 'pending' || r.username)) {
-             setRequests(data.results);
-           } else {
-             setFriendships(data.results);
-           }
+        const firstItem = data.results[0];
+        const isPending = firstItem.primary_state === 'pending' || firstItem.secondary_state === 'pending';
+        
+        if (isPending) {
+          // Only store requests where we are the RECIPIENT.
+          // In MySQL: f.secondary_user_id = ua.id joins the secondary user.
+          // Actually, we can just store all of them, but let's see.
+          setRequests(data.results);
         } else {
-           setFriendships(data.results);
+          setFriendships(data.results);
         }
       }
     });
@@ -45,14 +47,21 @@ export const useFriendshipSocket = () => {
     });
 
     socket.on('friendship:accepted', (data) => {
-      // Reload both lists when a friendship is accepted
-      socket.emit('friendship:load');
-      socket.emit('friendship:request');
+      // Remove from requests locally
+      const friendshipId = data.results?.id;
+      if (friendshipId) {
+        setRequests(prev => prev.filter(req => req.id !== friendshipId));
+        // Add to friendships
+        setFriendships(prev => [...prev, data.results]);
+      }
     });
     
     socket.on('friendship:rejected', (data) => {
-      // Reload requests when rejected
-      socket.emit('friendship:request');
+      // Remove from requests locally
+      const friendshipId = data.results?.id;
+      if (friendshipId) {
+        setRequests(prev => prev.filter(req => req.id !== friendshipId));
+      }
     });
 
     return () => {
