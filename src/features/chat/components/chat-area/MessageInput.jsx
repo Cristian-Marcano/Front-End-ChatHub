@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Paperclip, Send } from 'lucide-react';
 import ChatIconButton from '../ui/ChatIconButton';
 
-const MessageInput = ({ onSend, disabled }) => {
+const MessageInput = ({ onSend, onTyping, disabled }) => {
   const [text, setText] = useState('');
+  const typingTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSend = () => {
     if (text.trim() && !disabled) {
       onSend(text);
       setText('');
+      if (onTyping) {
+        onTyping(false);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      }
     }
   };
 
@@ -19,6 +32,18 @@ const MessageInput = ({ onSend, disabled }) => {
     }
   };
 
+  const handleChange = (e) => {
+    setText(e.target.value);
+    
+    if (onTyping && !disabled) {
+      onTyping(true);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        onTyping(false);
+      }, 2000);
+    }
+  };
+
   return (
     <div className="min-h-[72px] border-t-4 border-black bg-white flex items-center px-4 py-3 gap-4 shrink-0 relative z-10">
       <ChatIconButton icon={Paperclip} onClick={() => {}} title="Adjuntar" />
@@ -26,7 +51,7 @@ const MessageInput = ({ onSend, disabled }) => {
       <input 
         type="text" 
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         disabled={disabled}
         placeholder="Escribe un mensaje..." 

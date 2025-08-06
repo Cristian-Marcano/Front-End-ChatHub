@@ -5,29 +5,30 @@ export const useChatSocket = (activeChatId) => {
   const { socket, isConnected } = useSocket();
   const [messages, setMessages] = useState([]);
   const [chats, setChats] = useState([]);
+  const [isContactTyping, setIsContactTyping] = useState(false);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
 
     socket.on('chat:results', (data) => {
       if (data.results && Array.isArray(data.results)) {
-        if (data.results.length === 0) return;
+        if (data.results.length === 0) {
+          // Si el historial o lista está vacío
+          // Diferenciamos si es de chats o mensajes por el activeChatId
+          // Nota: Si activeChatId existe, asumimos que history está cargando mensajes
+          return;
+        }
         
-        // Distinguish between chat history and chat list
-        // Chat list has 'nickname' or 'chat_type', history has 'msg_text' or 'chat_id'
         const first = data.results[0];
         if (first.nickname !== undefined || first.chat_type !== undefined) {
-          console.log("Chat list loaded:", data.results);
           setChats(data.results);
         } else {
-          console.log("Chat history loaded:", data.results);
           setMessages(data.results);
         }
       }
     });
 
     socket.on('chat:newMessage', (data) => {
-      console.log("New message:", data);
       setMessages(prev => [...prev, data.results]);
     });
 
@@ -39,13 +40,21 @@ export const useChatSocket = (activeChatId) => {
       setMessages(prev => prev.filter(m => m.id !== data.id));
     });
 
+    socket.on('chat:typing', (data) => {
+      // data: { userId, chatId, isTyping }
+      if (data.chatId === activeChatId) {
+        setIsContactTyping(data.isTyping !== false); // fallback to true if undefined
+      }
+    });
+
     return () => {
       socket.off('chat:results');
       socket.off('chat:newMessage');
       socket.off('chat:messageEdited');
       socket.off('chat:messageDeleted');
+      socket.off('chat:typing');
     };
-  }, [socket, isConnected]);
+  }, [socket, isConnected, activeChatId]);
 
   // When active chat changes, load history
   useEffect(() => {
@@ -80,5 +89,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, messages, loadChats, sendMessage, setTyping, readMessage };
+  return { chats, messages, loadChats, sendMessage, setTyping, readMessage, isContactTyping };
 };

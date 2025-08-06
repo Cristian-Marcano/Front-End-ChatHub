@@ -26,7 +26,7 @@ const MessageList = ({ messages, currentUserId }) => {
         <MessageBubble 
           key={msg.id} 
           message={msg} 
-          isSentByMe={msg.senderId === currentUserId} 
+          isSentByMe={msg.user_sending_id === currentUserId} 
         />
       ))}
       <div ref={bottomRef} />

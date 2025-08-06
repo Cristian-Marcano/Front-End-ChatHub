@@ -3,8 +3,8 @@ import ChatHeader from './chat-area/ChatHeader';
 import MessageList from './chat-area/MessageList';
 import MessageInput from './chat-area/MessageInput';
 
-const ChatArea = ({ activeChat }) => {
-  const { messages, sendMessage } = useChatSocket(activeChat?.id);
+const ChatArea = ({ activeChat, currentUserId }) => {
+  const { messages, sendMessage, setTyping, isContactTyping } = useChatSocket(activeChat?.id);
 
   const handleSendMessage = (content) => {
     sendMessage(content);
@@ -18,16 +18,17 @@ const ChatArea = ({ activeChat }) => {
         <>
           <ChatHeader 
             activeChat={activeChat}
+            isTyping={isContactTyping}
             onSearch={() => console.log('Search in chat')}
             onOptions={() => console.log('Chat options')}
           />
           <MessageList 
             messages={messages}
-            currentUserId="me" 
-            // In a real app we'd compare msg.senderId with our actual userId
+            currentUserId={currentUserId} 
           />
           <MessageInput 
             onSend={handleSendMessage}
+            onTyping={setTyping}
             disabled={!activeChat}
           />
         </>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../auth/services/authService';
-import { profileService } from '../../profile/services/profileService';
 import { useFriendshipSocket } from '../../../hooks/socket/useFriendshipSocket';
 import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import SidebarHeader from './sidebar/SidebarHeader';
@@ -10,10 +9,9 @@ import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
 import AddFriendModal from './sidebar/AddFriendModal';
 
-const Sidebar = ({ activeChatId, onChatSelect }) => {
+const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [userProfile, setUserProfile] = useState(null);
   const [showRequests, setShowRequests] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   // Sockets
@@ -21,23 +19,6 @@ const Sidebar = ({ activeChatId, onChatSelect }) => {
   const { chats, loadChats } = useChatSocket(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const profile = await profileService.getProfile(token);
-          setUserProfile(profile);
-        }
-      } catch (error) {
-        if (error.response?.status === 404 || error.status === 404) {
-          navigate('/setup');
-        } else {
-          console.error("Failed to load profile", error);
-        }
-      }
-    };
-    fetchProfile();
-    
     loadChats();
     loadRequests();
   }, [loadChats, loadRequests]);

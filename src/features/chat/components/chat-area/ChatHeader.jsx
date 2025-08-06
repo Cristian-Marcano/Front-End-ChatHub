@@ -2,7 +2,7 @@ import { Search, MoreVertical } from 'lucide-react';
 import ChatAvatar from '../ui/ChatAvatar';
 import ChatIconButton from '../ui/ChatIconButton';
 
-const ChatHeader = ({ activeChat, onSearch, onOptions }) => {
+const ChatHeader = ({ activeChat, isTyping, onSearch, onOptions }) => {
   if (!activeChat) {
     return <div className="h-16 border-b-4 border-black bg-white flex items-center justify-between px-4 shrink-0 relative z-10" />;
   }
@@ -18,7 +18,9 @@ const ChatHeader = ({ activeChat, onSearch, onOptions }) => {
         {AvatarDisplay}
         <div>
           <h2 className="font-black text-black leading-tight">{activeChat.name}</h2>
-          <p className="text-xs font-bold text-gray-600">{activeChat.status || 'En línea'}</p>
+          <p className={`text-xs font-bold ${isTyping ? 'text-primary animate-pulse' : 'text-gray-600'}`}>
+            {isTyping ? 'Escribiendo...' : (activeChat.status || 'En línea')}
+          </p>
         </div>
       </div>
       <div className="flex gap-4">

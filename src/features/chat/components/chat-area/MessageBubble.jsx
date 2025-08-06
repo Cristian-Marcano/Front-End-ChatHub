@@ -4,12 +4,16 @@ const MessageBubble = ({ message, isSentByMe }) => {
   const textClass = 'text-black';
   const timeClass = isSentByMe ? 'text-gray-800' : 'text-gray-500';
 
+  const formattedTime = message.create_at 
+    ? new Date(message.create_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : '';
+
   return (
     <div className={`${alignClass} max-w-[75%]`}>
       <div className={`${bgClass} border-4 border-black p-3 rounded-sm shadow-[4px_4px_0px_0px_#000]`}>
-        <p className={`font-bold ${textClass} text-base`}>{message.content}</p>
+        <p className={`font-bold ${textClass} text-base`}>{message.msg_text}</p>
         <span className={`text-[10px] ${timeClass} font-black block text-right mt-1`}>
-          {message.time} {isSentByMe && (message.status === 'read' ? '✓✓' : '✓')}
+          {formattedTime} {isSentByMe && (message.status === 'read' ? '✓✓' : '✓')}
         </span>
       </div>
     </div>
