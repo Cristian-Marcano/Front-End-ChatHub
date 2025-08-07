@@ -12,6 +12,7 @@ const SidebarHeader = ({ onProfileClick, onNewChat, onAddFriend, onOptions, onLo
         title="Editar perfil"
       />
       <div className="flex gap-4 items-center">
+        <ChatIconButton icon={MessageSquarePlus} onClick={onNewChat} title="Nuevo Chat" />
         <div className="relative">
           <ChatIconButton icon={Bell} onClick={onOptions} title="Solicitudes" />
           {requestsCount > 0 && (

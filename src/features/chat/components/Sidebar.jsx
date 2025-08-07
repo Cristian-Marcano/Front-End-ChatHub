@@ -8,12 +8,14 @@ import SidebarSearch from './sidebar/SidebarSearch';
 import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
 import AddFriendModal from './sidebar/AddFriendModal';
+import NewChatModal from './sidebar/NewChatModal';
 
 const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showRequests, setShowRequests] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [showNewChat, setShowNewChat] = useState(false);
   // Sockets
   const { requests, loadRequests, acceptRequest, rejectRequest } = useFriendshipSocket();
   const { chats, loadChats } = useChatSocket(null);
@@ -58,6 +60,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         onProfileClick={() => navigate('/settings')}
         onOptions={() => setShowRequests(true)}
         onAddFriend={() => setShowAddFriend(true)}
+        onNewChat={() => setShowNewChat(true)}
         onLogout={handleLogout}
         requestsCount={requests.length}
       />
@@ -104,6 +107,14 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
       {showAddFriend && (
         <AddFriendModal 
           onClose={() => setShowAddFriend(false)} 
+        />
+      )}
+
+      {showNewChat && (
+        <NewChatModal 
+          chats={mappedChats}
+          onClose={() => setShowNewChat(false)}
+          onSelect={onChatSelect}
         />
       )}
     </div>
