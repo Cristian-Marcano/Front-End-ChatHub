@@ -2,9 +2,22 @@ import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import ChatHeader from './chat-area/ChatHeader';
 import MessageList from './chat-area/MessageList';
 import MessageInput from './chat-area/MessageInput';
+import { useState, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
 
 const ChatArea = ({ activeChat, currentUserId }) => {
   const { messages, sendMessage, setTyping, isContactTyping } = useChatSocket(activeChat?.id);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    setShowSearch(false);
+    setSearchQuery('');
+  }, [activeChat?.id]);
+
+  const filteredMessages = messages.filter(m => 
+    m.msg_text?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSendMessage = (content) => {
     sendMessage(content);
@@ -19,11 +32,27 @@ const ChatArea = ({ activeChat, currentUserId }) => {
           <ChatHeader 
             activeChat={activeChat}
             isTyping={isContactTyping}
-            onSearch={() => console.log('Search in chat')}
+            onSearch={() => setShowSearch(!showSearch)}
             onOptions={() => console.log('Chat options')}
           />
+          {showSearch && (
+            <div className="bg-white border-b-4 border-black p-2 flex items-center gap-2 z-10 relative">
+              <Search size={18} className="text-gray-500 ml-2" />
+              <input 
+                type="text" 
+                placeholder="Buscar en el chat..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="flex-1 h-10 px-2 outline-none font-bold text-sm bg-transparent"
+              />
+              <button onClick={() => { setShowSearch(false); setSearchQuery(''); }} className="p-2 hover:bg-gray-200 rounded-sm cursor-pointer">
+                <X size={18} className="text-black" />
+              </button>
+            </div>
+          )}
           <MessageList 
-            messages={messages}
+            messages={showSearch && searchQuery ? filteredMessages : messages}
             currentUserId={currentUserId} 
           />
           <MessageInput 

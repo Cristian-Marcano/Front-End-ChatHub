@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import { InputField } from '../../../../components/ui';
 import ChatAvatar from '../ui/ChatAvatar';
@@ -49,7 +49,7 @@ const NewChatModal = ({ chats, onClose, onSelect }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Search size={18} className="absolute right-3 top-[38px] -translate-y-1/2 text-gray-400 font-bold" strokeWidth={3} />
+          <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold" strokeWidth={3} />
         </div>
       </div>
 
