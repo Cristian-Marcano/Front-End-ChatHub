@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSocket } from '../../context/SocketContext';
-import { useGlobalSocketErrors } from './useGlobalSocketErrors';
 import { toast } from '../../utils/toast';
 
 export const useFriendshipSocket = () => {
@@ -59,6 +58,7 @@ export const useFriendshipSocket = () => {
     });
     
     socket.on('friendship:rejected', (data) => {
+      toast.info('Solicitud de amistad rechazada');
       // Remove from requests locally
       const friendshipId = data.results?.id;
       if (friendshipId) {
