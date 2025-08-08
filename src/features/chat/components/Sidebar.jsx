@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../auth/services/authService';
 import { useFriendshipSocket } from '../../../hooks/socket/useFriendshipSocket';
 import { useChatSocket } from '../../../hooks/socket/useChatSocket';
+import { formatRelativeTime } from "../../../utils/dateFormatter";
 import SidebarHeader from './sidebar/SidebarHeader';
 import SidebarSearch from './sidebar/SidebarSearch';
 import ChatList from './sidebar/ChatList';
@@ -43,7 +44,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         id: c.id, 
         name: c.nickname || "Usuario", 
         lastMessage: 'Sin mensajes', // Temporarily hardcoded until we parse the nested msg_text
-        time: c.create_at || '', 
+        time: formatRelativeTime(c.create_at) || '', 
         unread: 0,
         photo: c.photo 
       }))
