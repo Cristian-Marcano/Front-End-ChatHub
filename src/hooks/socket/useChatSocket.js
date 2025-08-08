@@ -73,7 +73,7 @@ export const useChatSocket = (activeChatId) => {
 
   const sendMessage = useCallback((content) => {
     if (socket && activeChatId) {
-      socket.emit('chat:sendMessage', { chatId: activeChatId, content });
+      socket.emit('chat:sendMessage', { chatId: activeChatId, msgText: content });
     }
   }, [socket, activeChatId]);
 
