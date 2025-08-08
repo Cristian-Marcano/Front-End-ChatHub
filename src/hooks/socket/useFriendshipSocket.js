@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSocket } from '../../context/SocketContext';
-import { useGlobalSocketErrors } from './useGlobalSocketErrors'; // For showing success toasts if needed
+import { useGlobalSocketErrors } from './useGlobalSocketErrors';
+import { toast } from '../../utils/toast';
 
 export const useFriendshipSocket = () => {
   const { socket, isConnected } = useSocket();
@@ -42,8 +43,8 @@ export const useFriendshipSocket = () => {
     });
     
     socket.on('friendship:received', (data) => {
-      // Acknowledgment that our request was sent successfully
       console.log('Request sent successfully:', data.message);
+      toast.success('Solicitud de amistad enviada');
     });
 
     socket.on('friendship:accepted', (data) => {
@@ -53,6 +54,7 @@ export const useFriendshipSocket = () => {
         setRequests(prev => prev.filter(req => req.id !== friendshipId));
         // Add to friendships
         setFriendships(prev => [...prev, data.results]);
+        toast.success('Solicitud de amistad aceptada');
       }
     });
     
