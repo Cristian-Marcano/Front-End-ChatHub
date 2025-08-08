@@ -54,7 +54,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   );
 
   return (
-    <div className="w-1/3 min-w-[320px] max-w-[450px] border-r-4 border-black flex flex-col bg-bg-light z-10 relative">
+    <div className="w-1/3 min-w-[320px] max-w-[450px] border-r-4 border-black flex flex-col bg-bg-light z-10 relative overflow-hidden">
       <SidebarHeader 
         userProfile={userProfile}
         onProfileClick={() => navigate('/settings')}
