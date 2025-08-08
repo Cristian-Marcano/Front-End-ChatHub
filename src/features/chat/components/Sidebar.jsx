@@ -43,8 +43,8 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
     ? chats.map(c => ({
         id: c.id, 
         name: c.nickname || "Usuario", 
-        lastMessage: 'Sin mensajes', // Temporarily hardcoded until we parse the nested msg_text
-        time: formatRelativeTime(c.create_at) || '', 
+        lastMessage: c.last_message || 'Sin mensajes',
+        time: formatRelativeTime(c.last_message_date || c.create_at) || '', 
         unread: 0,
         photo: c.photo 
       }))

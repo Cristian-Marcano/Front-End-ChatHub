@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
+import { isSameDay, formatChatDateSeparator } from '../../../../utils/dateFormatter';
 
 const MessageList = ({ messages, currentUserId }) => {
   const bottomRef = useRef(null);
@@ -22,13 +23,26 @@ const MessageList = ({ messages, currentUserId }) => {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 relative z-10">
-      {messages.map(msg => (
-        <MessageBubble 
-          key={msg.id} 
-          message={msg} 
-          isSentByMe={msg.user_sending_id === currentUserId} 
-        />
-      ))}
+      {messages.map((msg, index) => {
+        const prevMsg = messages[index - 1];
+        const showDateSeparator = !prevMsg || !isSameDay(msg.create_at, prevMsg.create_at);
+
+        return (
+          <div key={msg.id} className="flex flex-col gap-4">
+            {showDateSeparator && (
+              <div className="flex justify-center my-2">
+                <span className="bg-white border-2 border-black px-3 py-1 text-xs font-bold text-black shadow-[2px_2px_0px_0px_#000] rounded-sm uppercase tracking-wide">
+                  {formatChatDateSeparator(msg.create_at)}
+                </span>
+              </div>
+            )}
+            <MessageBubble 
+              message={msg} 
+              isSentByMe={msg.user_sending_id === currentUserId} 
+            />
+          </div>
+        );
+      })}
       <div ref={bottomRef} />
     </div>
   );
