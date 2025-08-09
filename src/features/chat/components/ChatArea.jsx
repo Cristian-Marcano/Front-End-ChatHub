@@ -128,7 +128,7 @@ const ChatArea = ({ activeChat, currentUserId }) => {
             </div>
           )}
         </div>
-      ) : () : (
+      ) : (
         <div className="flex-1 flex flex-col justify-center items-center relative z-10 p-6 text-center">
           <div className="bg-white border-4 border-black p-6 rounded-sm shadow-[8px_8px_0px_0px_#000] max-w-md">
             <h2 className="text-2xl font-black mb-2 text-black">ChatHub</h2>
