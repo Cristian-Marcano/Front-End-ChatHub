@@ -41,7 +41,7 @@ const MessageList = ({ messages, currentUserId, highlightMessageId }) => {
                 </span>
               </div>
             )}
-            <div ref={msg.id === highlightMessageId ? highlightedRef : null} className={`transition-all duration-1000 ${msg.id === highlightMessageId ? 'ring-4 ring-yellow-400 bg-yellow-100/30 rounded-lg p-1 scale-[1.02]' : ''}`}>
+            <div ref={msg.id === highlightMessageId ? highlightedRef : null} className={`flex flex-col transition-all duration-1000 ${msg.id === highlightMessageId ? 'ring-4 ring-yellow-400 bg-yellow-100/30 rounded-lg p-1 scale-[1.02]' : ''}`}>
               <MessageBubble 
                 message={msg} 
                 isSentByMe={msg.user_sending_id === currentUserId} 
