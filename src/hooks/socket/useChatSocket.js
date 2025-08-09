@@ -6,6 +6,8 @@ export const useChatSocket = (activeChatId) => {
   const [messages, setMessages] = useState([]);
   const [chats, setChats] = useState([]);
   const [isContactTyping, setIsContactTyping] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -40,6 +42,16 @@ export const useChatSocket = (activeChatId) => {
       setMessages(prev => prev.filter(m => m.id !== data.id));
     });
 
+    
+    socket.on('chat:searchResults', (data) => {
+      setIsSearching(false);
+      setSearchResults(data.results || []);
+    });
+
+    socket.on('chat:contextResults', (data) => {
+      setMessages(data.results || []);
+    });
+
     socket.on('chat:typing', (data) => {
       // data: { userId, chatId, isTyping }
       if (data.chatId === activeChatId) {
@@ -53,6 +65,10 @@ export const useChatSocket = (activeChatId) => {
       socket.off('chat:messageEdited');
       socket.off('chat:messageDeleted');
       socket.off('chat:typing');
+
+      socket.off('chat:searchResults');
+      socket.off('chat:contextResults');
+
     };
   }, [socket, isConnected, activeChatId]);
 
@@ -60,6 +76,7 @@ export const useChatSocket = (activeChatId) => {
   useEffect(() => {
     if (socket && isConnected && activeChatId) {
       setMessages([]); // clear while loading
+      setSearchResults([]);
       socket.emit('chat:history', { chatId: activeChatId });
     }
   }, [activeChatId, socket, isConnected]);
@@ -70,6 +87,28 @@ export const useChatSocket = (activeChatId) => {
       socket.emit('chat:getAll', { page: 1, pageSize: 20 });
     }
   }, [socket, isConnected]);
+
+  
+  const searchMessages = useCallback((query) => {
+    if (socket && activeChatId && query.trim()) {
+      setIsSearching(true);
+      socket.emit('chat:searchMessages', { chatId: activeChatId, query, page: 1, limit: 50 });
+    } else {
+      setSearchResults([]);
+    }
+  }, [socket, activeChatId]);
+
+  const loadContext = useCallback((messageId) => {
+    if (socket && activeChatId) {
+      socket.emit('chat:loadContext', { chatId: activeChatId, targetMessageId: messageId });
+    }
+  }, [socket, activeChatId]);
+
+  const reloadHistory = useCallback(() => {
+    if (socket && activeChatId) {
+      socket.emit('chat:history', { chatId: activeChatId });
+    }
+  }, [socket, activeChatId]);
 
   const sendMessage = useCallback((content) => {
     if (socket && activeChatId) {
@@ -89,5 +128,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, messages, loadChats, sendMessage, setTyping, readMessage, isContactTyping };
+  return { chats, messages, searchResults, isSearching, loadChats, sendMessage, setTyping, readMessage, isContactTyping, searchMessages, loadContext, reloadHistory };
 };

@@ -2,12 +2,17 @@ import { useEffect, useRef } from 'react';
 import MessageBubble from './MessageBubble';
 import { isSameDay, formatChatDateSeparator } from '../../../../utils/dateFormatter';
 
-const MessageList = ({ messages, currentUserId }) => {
+const MessageList = ({ messages, currentUserId, highlightMessageId }) => {
   const bottomRef = useRef(null);
+  const highlightedRef = useRef(null);
 
   // Auto scroll to bottom
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (highlightMessageId && highlightedRef.current) {
+      highlightedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   if (!messages || messages.length === 0) {
@@ -36,10 +41,12 @@ const MessageList = ({ messages, currentUserId }) => {
                 </span>
               </div>
             )}
-            <MessageBubble 
-              message={msg} 
-              isSentByMe={msg.user_sending_id === currentUserId} 
-            />
+            <div ref={msg.id === highlightMessageId ? highlightedRef : null} className={`transition-all duration-1000 ${msg.id === highlightMessageId ? 'ring-4 ring-yellow-400 bg-yellow-100/30 rounded-lg p-1 scale-[1.02]' : ''}`}>
+              <MessageBubble 
+                message={msg} 
+                isSentByMe={msg.user_sending_id === currentUserId} 
+              />
+            </div>
           </div>
         );
       })}
