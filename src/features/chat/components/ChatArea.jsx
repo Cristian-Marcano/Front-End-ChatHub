@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 
 const ChatArea = ({ activeChat, currentUserId }) => {
-  const { messages, searchResults, isSearching, searchMessages, loadContext, reloadHistory, sendMessage, setTyping, isContactTyping } = useChatSocket(activeChat?.id);
+  const { messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, searchMessages, loadContext, reloadHistory, sendMessage, setTyping, isContactTyping } = useChatSocket(activeChat?.id);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightMessageId, setHighlightMessageId] = useState(null);
@@ -68,6 +68,9 @@ const ChatArea = ({ activeChat, currentUserId }) => {
                 messages={messages}
                 currentUserId={currentUserId} 
                 highlightMessageId={highlightMessageId}
+                hasMoreHistory={hasMoreHistory}
+                isLoadingMore={isLoadingMore}
+                onLoadMore={loadMoreHistory}
               />
             </div>
             

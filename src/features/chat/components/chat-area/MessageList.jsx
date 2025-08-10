@@ -1,16 +1,49 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 import MessageBubble from './MessageBubble';
+import { Loader } from 'lucide-react';
 import { isSameDay, formatChatDateSeparator } from '../../../../utils/dateFormatter';
 
-const MessageList = ({ messages, currentUserId, highlightMessageId }) => {
+const MessageList = ({ messages, currentUserId, highlightMessageId, hasMoreHistory, isLoadingMore, onLoadMore }) => {
   const bottomRef = useRef(null);
   const highlightedRef = useRef(null);
+
+  
+  const containerRef = useRef(null);
+  const previousScrollHeight = useRef(0);
+  const isFetchingRef = useRef(false);
+
+  // Sync ref to avoid extra rerenders or closures
+  useEffect(() => {
+    isFetchingRef.current = isLoadingMore;
+  }, [isLoadingMore]);
+
+  const handleScroll = () => {
+    if (containerRef.current) {
+      if (containerRef.current.scrollTop === 0 && hasMoreHistory && !isFetchingRef.current) {
+        previousScrollHeight.current = containerRef.current.scrollHeight;
+        if (onLoadMore) onLoadMore();
+      }
+    }
+  };
+
+  useLayoutEffect(() => {
+    // If we just loaded older messages (scrollHeight increased) and we were scrolled at the top
+    if (containerRef.current && previousScrollHeight.current > 0) {
+      const heightDifference = containerRef.current.scrollHeight - previousScrollHeight.current;
+      if (heightDifference > 0) {
+        // Restore scroll position so user doesn't feel a jump
+        containerRef.current.scrollTop = heightDifference;
+      }
+      previousScrollHeight.current = 0;
+    }
+  }, [messages]);
 
   // Auto scroll to bottom
   useEffect(() => {
     if (highlightMessageId && highlightedRef.current) {
       highlightedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
+    } else if (!previousScrollHeight.current) {
+      // Only scroll to bottom if we aren't maintaining scroll height (i.e. not loading older messages)
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
@@ -27,7 +60,16 @@ const MessageList = ({ messages, currentUserId, highlightMessageId }) => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 relative z-10">
+    <div 
+      ref={containerRef}
+      onScroll={handleScroll}
+      className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 relative z-10"
+    >
+      {isLoadingMore && (
+        <div className="flex justify-center py-2 shrink-0">
+          <Loader className="animate-spin text-black" size={24} />
+        </div>
+      )}
       {messages.map((msg, index) => {
         const prevMsg = messages[index - 1];
         const showDateSeparator = !prevMsg || !isSameDay(msg.create_at, prevMsg.create_at);

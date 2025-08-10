@@ -8,27 +8,38 @@ export const useChatSocket = (activeChatId) => {
   const [isContactTyping, setIsContactTyping] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const historyPageRef = useRef(1);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
 
+    
     socket.on('chat:results', (data) => {
       if (data.results && Array.isArray(data.results)) {
-        if (data.results.length === 0) {
-          // Si el historial o lista está vacío
-          // Diferenciamos si es de chats o mensajes por el activeChatId
-          // Nota: Si activeChatId existe, asumimos que history está cargando mensajes
-          return;
-        }
-        
-        const first = data.results[0];
-        if (first.nickname !== undefined || first.chat_type !== undefined) {
-          setChats(data.results);
-        } else {
-          setMessages(data.results);
-        }
+        setChats(data.results);
       }
     });
+
+    socket.on('chat:historyResults', (data) => {
+      if (data.results && Array.isArray(data.results)) {
+        if (data.results.length < 40) {
+          setHasMoreHistory(false);
+        } else {
+          setHasMoreHistory(true);
+        }
+
+        setMessages(prev => {
+          if (historyPageRef.current === 1) {
+            return data.results;
+          }
+          return [...data.results, ...prev];
+        });
+        setIsLoadingMore(false);
+      }
+    });
+
 
     socket.on('chat:newMessage', (data) => {
       setMessages(prev => [...prev, data.results]);
@@ -61,6 +72,7 @@ export const useChatSocket = (activeChatId) => {
 
     return () => {
       socket.off('chat:results');
+      socket.off('chat:historyResults');
       socket.off('chat:newMessage');
       socket.off('chat:messageEdited');
       socket.off('chat:messageDeleted');
@@ -77,9 +89,23 @@ export const useChatSocket = (activeChatId) => {
     if (socket && isConnected && activeChatId) {
       setMessages([]); // clear while loading
       setSearchResults([]);
-      socket.emit('chat:history', { chatId: activeChatId });
+      setHasMoreHistory(true);
+      historyPageRef.current = 1;
+      setIsLoadingMore(false);
+      historyPageRef.current = 1;
+      setHasMoreHistory(true);
+      socket.emit('chat:history', { chatId: activeChatId, page: 1, limit: 40 });
     }
   }, [activeChatId, socket, isConnected]);
+
+  
+  const loadMoreHistory = useCallback(() => {
+    if (socket && activeChatId && hasMoreHistory && !isLoadingMore) {
+      setIsLoadingMore(true);
+      historyPageRef.current += 1;
+      socket.emit('chat:history', { chatId: activeChatId, page: historyPageRef.current, limit: 40 });
+    }
+  }, [socket, activeChatId, hasMoreHistory, isLoadingMore]);
 
   const loadChats = useCallback(() => {
     if (socket && isConnected) {
@@ -106,7 +132,7 @@ export const useChatSocket = (activeChatId) => {
 
   const reloadHistory = useCallback(() => {
     if (socket && activeChatId) {
-      socket.emit('chat:history', { chatId: activeChatId });
+      socket.emit('chat:history', { chatId: activeChatId, page: 1, limit: 40 });
     }
   }, [socket, activeChatId]);
 
@@ -128,5 +154,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, messages, searchResults, isSearching, loadChats, sendMessage, setTyping, readMessage, isContactTyping, searchMessages, loadContext, reloadHistory };
+  return { chats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, isContactTyping, searchMessages, loadContext, reloadHistory };
 };
