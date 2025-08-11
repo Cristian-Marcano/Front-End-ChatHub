@@ -43,6 +43,10 @@ export const useChatSocket = (activeChatId) => {
 
     socket.on('chat:newMessage', (data) => {
       setMessages(prev => [...prev, data.results]);
+      // If we are currently in this chat, mark the incoming message as read instantly
+      if (data.results.chat_id === activeChatId) {
+        socket.emit('chat:markAsRead', { chatId: activeChatId });
+      }
     });
 
     socket.on('chat:messageEdited', (data) => {
@@ -63,6 +67,17 @@ export const useChatSocket = (activeChatId) => {
       setMessages(data.results || []);
     });
 
+    
+    socket.on('chat:messagesRead', (data) => {
+      // If someone read the messages in our current chat
+      if (data.chatId === activeChatId) {
+        setMessages(prev => prev.map(m => 
+          // Only update messages sent by us that weren't read yet
+          (m.user_sending_id !== data.readBy && m.status !== 'read') ? { ...m, status: 'read' } : m
+        ));
+      }
+    });
+
     socket.on('chat:typing', (data) => {
       // data: { userId, chatId, isTyping }
       if (data.chatId === activeChatId) {
@@ -77,6 +92,7 @@ export const useChatSocket = (activeChatId) => {
       socket.off('chat:messageEdited');
       socket.off('chat:messageDeleted');
       socket.off('chat:typing');
+      socket.off('chat:messagesRead');
 
       socket.off('chat:searchResults');
       socket.off('chat:contextResults');
@@ -95,6 +111,7 @@ export const useChatSocket = (activeChatId) => {
       historyPageRef.current = 1;
       setHasMoreHistory(true);
       socket.emit('chat:history', { chatId: activeChatId, page: 1, limit: 40 });
+      socket.emit('chat:markAsRead', { chatId: activeChatId });
     }
   }, [activeChatId, socket, isConnected]);
 
@@ -121,6 +138,12 @@ export const useChatSocket = (activeChatId) => {
       socket.emit('chat:searchMessages', { chatId: activeChatId, query, page: 1, limit: 50 });
     } else {
       setSearchResults([]);
+    }
+  }, [socket, activeChatId]);
+
+  const markAsRead = useCallback(() => {
+    if (socket && activeChatId) {
+      socket.emit('chat:markAsRead', { chatId: activeChatId });
     }
   }, [socket, activeChatId]);
 
@@ -154,5 +177,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, isContactTyping, searchMessages, loadContext, reloadHistory };
+  return { chats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
 };

@@ -13,7 +13,11 @@ const MessageBubble = ({ message, isSentByMe }) => {
       <div className={`${bgClass} border-4 border-black p-3 rounded-sm shadow-[4px_4px_0px_0px_#000]`}>
         <p className={`font-bold ${textClass} text-base`}>{message.msg_text}</p>
         <span className={`text-[10px] ${timeClass} font-black block text-right mt-1`}>
-          {formattedTime} {isSentByMe && (message.status === 'read' ? '✓✓' : '✓')}
+          {formattedTime} {isSentByMe && (
+            <span className={message.status === 'read' ? 'text-blue-600' : 'text-gray-500'}>
+              {message.status === 'read' ? '✓✓' : '✓'}
+            </span>
+          )}
         </span>
       </div>
     </div>
