@@ -78,6 +78,12 @@ export const useChatSocket = (activeChatId) => {
       }
     });
 
+    
+    socket.on('group:addedToGroup', () => {
+      // Reload chats if someone adds us to a group
+      socket.emit('chat:getAll', { page: 1, pageSize: 20 });
+    });
+
     socket.on('chat:typing', (data) => {
       // data: { userId, chatId, isTyping }
       if (data.chatId === activeChatId) {
@@ -92,6 +98,7 @@ export const useChatSocket = (activeChatId) => {
       socket.off('chat:messageEdited');
       socket.off('chat:messageDeleted');
       socket.off('chat:typing');
+      socket.off('group:addedToGroup');
       socket.off('chat:messagesRead');
 
       socket.off('chat:searchResults');

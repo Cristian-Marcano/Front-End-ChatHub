@@ -1,11 +1,14 @@
 import UnreadBadge from '../ui/UnreadBadge';
 import ChatAvatar from '../ui/ChatAvatar';
+import { Users } from 'lucide-react';
 
 const ChatListItem = ({ chat, isActive, onClick }) => {
   // Determine if it's a dummy color block or an avatar
-  const AvatarDisplay = chat.color 
-    ? <div className={`w-12 h-12 ${chat.color} border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] shrink-0 mr-4 group-hover:-translate-y-1 transition-transform`}></div>
-    : <ChatAvatar config={chat.photo} name={chat.name} className="w-12 h-12 shadow-[2px_2px_0px_0px_#000] mr-4 group-hover:-translate-y-1 transition-transform" />;
+  const AvatarDisplay = chat.chatType === 'group'
+    ? <div className="w-12 h-12 bg-black border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] shrink-0 mr-4 group-hover:-translate-y-1 transition-transform flex items-center justify-center text-white"><Users size={24} /></div>
+    : chat.color 
+      ? <div className={`w-12 h-12 ${chat.color} border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_#000] shrink-0 mr-4 group-hover:-translate-y-1 transition-transform`}></div>
+      : <ChatAvatar config={chat.photo} name={chat.name} className="w-12 h-12 shadow-[2px_2px_0px_0px_#000] mr-4 group-hover:-translate-y-1 transition-transform" />;
 
   return (
     <div 

@@ -10,6 +10,7 @@ import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
 import AddFriendModal from './sidebar/AddFriendModal';
 import NewChatModal from './sidebar/NewChatModal';
+import NewGroupModal from './sidebar/NewGroupModal';
 
 const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   const [showRequests, setShowRequests] = useState(false);
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
+  const [showNewGroup, setShowNewGroup] = useState(false);
   // Sockets
   const { requests, loadRequests, acceptRequest, rejectRequest } = useFriendshipSocket();
   const { chats, loadChats } = useChatSocket(null);
@@ -46,7 +48,9 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         lastMessage: c.last_message || 'Sin mensajes',
         time: formatRelativeTime(c.last_message_date || c.create_at) || '', 
         unread: 0,
-        photo: c.photo 
+        photo: c.photo,
+        chatType: c.chat_type,
+        friendId: c.friend_id 
       }))
     : [];
 
@@ -62,6 +66,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         onOptions={() => setShowRequests(true)}
         onAddFriend={() => setShowAddFriend(true)}
         onNewChat={() => setShowNewChat(true)}
+        onNewGroup={() => setShowNewGroup(true)}
         onLogout={handleLogout}
         requestsCount={requests.length}
       />
