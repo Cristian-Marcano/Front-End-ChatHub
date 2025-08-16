@@ -10,7 +10,7 @@ import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
 import AddFriendModal from './sidebar/AddFriendModal';
 import NewChatModal from './sidebar/NewChatModal';
-import NewGroupModal from './sidebar/NewGroupModal';
+import NewGroupDrawer from './sidebar/NewGroupDrawer';
 
 const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
   const navigate = useNavigate();
@@ -121,6 +121,18 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
           chats={mappedChats}
           onClose={() => setShowNewChat(false)}
           onSelect={onChatSelect}
+        />
+      )}
+    
+      {showNewGroup && (
+        <NewGroupDrawer 
+          friends={mappedChats.filter(c => c.chatType === 'private')}
+          onClose={() => setShowNewGroup(false)}
+          onGroupCreated={(newChat) => {
+             setShowNewGroup(false);
+             loadChats();
+             onChatSelect(newChat);
+          }}
         />
       )}
     </div>

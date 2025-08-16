@@ -3,7 +3,7 @@ import { X, Users, Check } from 'lucide-react';
 import { useSocket } from '../../../../context/SocketContext';
 import ChatAvatar from '../ui/ChatAvatar';
 
-const NewGroupModal = ({ friends, onClose, onGroupCreated }) => {
+const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -87,7 +87,7 @@ const NewGroupModal = ({ friends, onClose, onGroupCreated }) => {
           </p>
         ) : (
           friends.map(friend => {
-            const isSelected = selectedFriends.includes(friend.id);
+            const isSelected = selectedFriends.includes(friend.friendId);
             // Notice friend.id is actually chatId of the private chat. Wait! 
             // The user schema requires the user ID, not the chat ID!
             // Wait, we don't have the user ID of the friend in the 'mappedChats'.
@@ -123,4 +123,4 @@ const NewGroupModal = ({ friends, onClose, onGroupCreated }) => {
   );
 };
 
-export default NewGroupModal;
+export default NewGroupDrawer;
