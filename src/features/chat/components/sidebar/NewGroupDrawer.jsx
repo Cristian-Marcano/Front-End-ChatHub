@@ -94,7 +94,7 @@ const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
           disabled={isCreating || !groupName.trim() || selectedFriends.length === 0}
           className="w-full mt-4 bg-black text-white p-3 font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary transition-colors flex justify-center border-2 border-transparent hover:border-black"
         >
-          {isCreating ? 'Creando...' : 'Crear Grupo'}
+          {isCreating ? 'Creando...' : !groupName.trim() ? 'Escribe un nombre' : selectedFriends.length === 0 ? 'Selecciona amigos' : 'Crear Grupo'}
         </button>
       </div>
 
