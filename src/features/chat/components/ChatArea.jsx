@@ -44,8 +44,7 @@ const ChatArea = ({ activeChat, currentUserId }) => {
               activeChat={activeChat}
               isTyping={isContactTyping}
               onSearch={() => setShowSearch(!showSearch)}
-              onOptions={() => console.log('Chat options')}
-            />
+                          />
             
             
             {/* Banner for older context */}
