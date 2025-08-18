@@ -9,7 +9,7 @@ import SidebarSearch from './sidebar/SidebarSearch';
 import ChatList from './sidebar/ChatList';
 import FriendRequestsModal from './sidebar/FriendRequestsModal';
 import AddFriendModal from './sidebar/AddFriendModal';
-import NewChatModal from './sidebar/NewChatModal';
+import NewChatDrawer from './sidebar/NewChatDrawer';
 import NewGroupDrawer from './sidebar/NewGroupDrawer';
 
 const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
@@ -117,7 +117,7 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
       )}
 
       {showNewChat && (
-        <NewChatModal 
+        <NewChatDrawer 
           chats={mappedChats}
           onClose={() => setShowNewChat(false)}
           onSelect={onChatSelect}
