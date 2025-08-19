@@ -7,6 +7,8 @@ export const useChatSocket = (activeChatId) => {
   const [chats, setChats] = useState([]);
   const [isContactTyping, setIsContactTyping] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [contactSearchResults, setContactSearchResults] = useState([]);
+  const [isSearchingContacts, setIsSearchingContacts] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -16,6 +18,11 @@ export const useChatSocket = (activeChatId) => {
     if (!socket || !isConnected) return;
 
     
+    socket.on('chat:searchedChats', (data) => {
+      setContactSearchResults(data.results || []);
+      setIsSearchingContacts(false);
+    });
+
     socket.on('chat:results', (data) => {
       if (data.results && Array.isArray(data.results)) {
         setChats(data.results);
@@ -103,6 +110,7 @@ export const useChatSocket = (activeChatId) => {
 
     return () => {
       socket.off('chat:results');
+      socket.off('chat:searchedChats');
       socket.off('chat:historyResults');
       socket.off('chat:newMessage');
       socket.off('chat:messageEdited');
@@ -150,6 +158,18 @@ export const useChatSocket = (activeChatId) => {
   }, [socket, isConnected]);
 
   
+  const searchContacts = useCallback((query) => {
+    if (socket && isConnected) {
+      if (!query.trim()) {
+        setContactSearchResults([]);
+        setIsSearchingContacts(false);
+        return;
+      }
+      setIsSearchingContacts(true);
+      socket.emit('chat:searchChats', { name: query, page: 1, pageSize: 20 });
+    }
+  }, [socket, isConnected]);
+
   const searchMessages = useCallback((query) => {
     if (socket && activeChatId && query.trim()) {
       setIsSearching(true);
@@ -195,5 +215,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, loadMoreChats, hasMoreChats, isLoadingMoreChats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
+  return { chats, loadMoreChats, contactSearchResults, isSearchingContacts, searchContacts, hasMoreChats, isLoadingMoreChats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
 };

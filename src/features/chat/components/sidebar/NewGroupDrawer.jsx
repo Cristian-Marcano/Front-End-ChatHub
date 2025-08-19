@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Users, Check } from 'lucide-react';
+import { ArrowLeft, Users, Check, Search } from 'lucide-react';
 import { InputField } from '../../../../components/ui';
 import { useSocket } from '../../../../context/SocketContext';
+import { useChatSocket } from '../../../../hooks/socket/useChatSocket';
 import ChatAvatar from '../ui/ChatAvatar';
 
-const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
+const NewGroupDrawer = ({ friends: initialFriends, onClose, onGroupCreated }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { contactSearchResults, searchContacts, isSearchingContacts } = useChatSocket(null);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const { socket, isConnected } = useSocket();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchContacts(searchQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchContacts]);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -31,6 +43,16 @@ const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
       socket.off('group:created', handleCreated);
     };
   }, [socket, isConnected, onGroupCreated]);
+
+  const displayFriends = searchQuery.trim() 
+    ? contactSearchResults.map(c => ({
+        id: c.id,
+        name: c.nickname || c.group_name,
+        photo: c.photo,
+        chatType: c.group_name ? 'group' : 'private',
+        friendId: c.friend_id
+      })).filter(c => c.chatType === 'private')
+    : initialFriends;
 
   const toggleFriend = (friendId) => {
     // Fallback just in case friendId is missing/undefined in database, use id
@@ -88,6 +110,16 @@ const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
         />
+
+        <div className="relative mt-4">
+          <InputField 
+            type="text"
+            placeholder="Buscar amigos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold" strokeWidth={3} />
+        </div>
         
         <button 
           onClick={handleCreate}
@@ -99,12 +131,12 @@ const NewGroupDrawer = ({ friends, onClose, onGroupCreated }) => {
       </div>
 
       <div className="flex-1 overflow-y-auto bg-white flex flex-col">
-        {friends.length === 0 ? (
+        {displayFriends.length === 0 ? (
           <div className="text-center p-8 font-bold text-gray-500">
             No tienes amigos disponibles.
           </div>
         ) : (
-          friends.map(friend => {
+          displayFriends.map(friend => {
             // Use friendId or id as fallback for selection
             const fId = friend.friendId || friend.id;
             const isSelected = selectedFriends.includes(fId);

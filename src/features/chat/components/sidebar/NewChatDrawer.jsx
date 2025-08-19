@@ -1,15 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useChatSocket } from '../../../../hooks/socket/useChatSocket';
 import { ArrowLeft, Search } from 'lucide-react';
 import { InputField } from '../../../../components/ui';
 import ChatAvatar from '../ui/ChatAvatar';
 
-const NewChatDrawer = ({ chats, onClose, onSelect }) => {
+const NewChatDrawer = ({ chats: initialChats, onClose, onSelect }) => {
+  const { contactSearchResults, searchContacts, isSearchingContacts } = useChatSocket(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isClosing, setIsClosing] = useState(false);
 
-  const filteredChats = chats.filter(chat => 
-    chat.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchContacts(searchQuery);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchContacts]);
+
+  const displayChats = searchQuery.trim() 
+    ? contactSearchResults.map(c => ({
+        id: c.id,
+        name: c.nickname || c.group_name,
+        photo: c.photo,
+        status: c.about || (c.chatType === 'group' ? 'Grupo' : ''),
+        chatType: c.group_name ? 'group' : 'private',
+        friendId: c.friend_id
+      }))
+    : initialChats; // fallback to sidebar chats if no search
 
   const handleClose = () => {
     setIsClosing(true);
@@ -54,12 +72,12 @@ const NewChatDrawer = ({ chats, onClose, onSelect }) => {
       </div>
 
       <div className="flex-1 overflow-y-auto bg-white flex flex-col">
-        {filteredChats.length === 0 ? (
+        {displayChats.length === 0 ? (
           <div className="text-center p-8 font-bold text-gray-500">
             No se encontraron contactos.
           </div>
         ) : (
-          filteredChats.map(chat => (
+          displayChats.map(chat => (
             <div 
               key={chat.id} 
               onClick={() => {
