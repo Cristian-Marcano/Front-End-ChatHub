@@ -5,6 +5,10 @@ export const useChatSocket = (activeChatId) => {
   const { socket, isConnected } = useSocket();
   const [messages, setMessages] = useState([]);
   const [chats, setChats] = useState([]);
+  const chatPageRef = useRef(1);
+  const [chatPage, setChatPage] = useState(1);
+  const [hasMoreChats, setHasMoreChats] = useState(true);
+  const [isLoadingMoreChats, setIsLoadingMoreChats] = useState(false);
   const [isContactTyping, setIsContactTyping] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [contactSearchResults, setContactSearchResults] = useState([]);
@@ -25,7 +29,17 @@ export const useChatSocket = (activeChatId) => {
 
     socket.on('chat:results', (data) => {
       if (data.results && Array.isArray(data.results)) {
-        setChats(data.results);
+        if (chatPageRef.current === 1) {
+          setChats(data.results);
+        } else {
+          setChats(prev => {
+              const existingIds = new Set(prev.map(c => c.id));
+              const newChats = data.results.filter(c => !existingIds.has(c.id));
+              return [...prev, ...newChats];
+          });
+        }
+        setHasMoreChats(data.results.length === 20);
+        setIsLoadingMoreChats(false);
       }
     });
 
@@ -89,6 +103,8 @@ export const useChatSocket = (activeChatId) => {
     
     socket.on('group:left', (data) => {
       // Si el usuario sale del grupo, recargamos los chats y des-seleccionamos el chat activo si era este
+      setChatPage(1);
+      setHasMoreChats(true);
       socket.emit('chat:getAll', { page: 1, pageSize: 20 });
       // We can't clear activeChatId directly here unless we expose it, but ChatLayout handles the selection.
       // Usually, if the active chat disappears from the list, it will just show "Chat not found" or we can navigate away.
@@ -149,6 +165,16 @@ export const useChatSocket = (activeChatId) => {
       socket.emit('chat:history', { chatId: activeChatId, page: historyPageRef.current, limit: 40 });
     }
   }, [socket, activeChatId, hasMoreHistory, isLoadingMore]);
+
+  
+  const loadMoreChats = useCallback(() => {
+    if (socket && isConnected && hasMoreChats && !isLoadingMoreChats) {
+      setIsLoadingMoreChats(true);
+      const nextPage = chatPage + 1;
+      setChatPage(nextPage);
+      socket.emit('chat:getAll', { page: nextPage, pageSize: 20 });
+    }
+  }, [socket, isConnected, chatPage, hasMoreChats, isLoadingMoreChats]);
 
   const loadChats = useCallback(() => {
     if (socket && isConnected) {
