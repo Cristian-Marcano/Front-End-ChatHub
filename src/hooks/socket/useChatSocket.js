@@ -195,5 +195,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
+  return { chats, loadMoreChats, hasMoreChats, isLoadingMoreChats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
 };
