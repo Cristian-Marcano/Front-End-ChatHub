@@ -51,6 +51,7 @@ const ChatArea = ({ activeChat, currentUserId }) => {
               activeChat={activeChat}
               isTyping={isContactTyping}
               onSearch={() => setShowSearch(!showSearch)}
+              didIBlock={didIBlock}
                           />
             
             
