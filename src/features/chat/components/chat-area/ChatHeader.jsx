@@ -38,6 +38,10 @@ const ChatHeader = ({ activeChat, isTyping, onSearch }) => {
     setShowMenu(false);
     if (!socket) return;
 
+    if (action === 'unblock') {
+      socket.emit('friendship:unblock', { chatId: Number(activeChat.id) });
+      return;
+    }
     if (action === 'leave_group') {
       socket.emit('group:leave', { chatId: Number(activeChat.id) });
       // The reload of chats should be handled by listening to group:left or similar.

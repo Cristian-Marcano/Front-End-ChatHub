@@ -10,6 +10,12 @@ const ChatArea = ({ activeChat, currentUserId }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightMessageId, setHighlightMessageId] = useState(null);
+  
+  const isBlocked = activeChat?.chatType === 'private' && (activeChat.primary_state === 'blocked' || activeChat.secondary_state === 'blocked');
+  const didIBlock = activeChat?.chatType === 'private' && (
+    (activeChat.primary_user_id === currentUserId && activeChat.primary_state === 'blocked') || 
+    (activeChat.primary_user_id !== currentUserId && activeChat.secondary_state === 'blocked')
+  );
 
   useEffect(() => {
     setShowSearch(false);
@@ -75,7 +81,7 @@ const ChatArea = ({ activeChat, currentUserId }) => {
             </div>
             
 
-            {activeChat?.friendship_state === 'blocked' ? (
+            {isBlocked ? (
               <div className="bg-gray-200 border-t-4 border-black p-4 text-center font-bold text-gray-600">
                 Este chat ha sido bloqueado y no permite enviar más mensajes.
               </div>

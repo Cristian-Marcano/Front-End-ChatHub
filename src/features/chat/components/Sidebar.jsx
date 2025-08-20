@@ -51,7 +51,9 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         photo: c.photo,
         chatType: c.chat_type,
         friendId: c.friend_id,
-        friendship_state: c.friendship_state
+        primary_user_id: c.primary_user_id,
+        primary_state: c.primary_state,
+        secondary_state: c.secondary_state
       }))
     : [];
 
