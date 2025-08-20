@@ -16,6 +16,7 @@ const ChatArea = ({ activeChat, currentUserId }) => {
     (activeChat.primary_user_id === currentUserId && activeChat.primary_state === 'blocked') || 
     (activeChat.primary_user_id !== currentUserId && activeChat.secondary_state === 'blocked')
   );
+  console.log("activeChat:", activeChat, "currentUserId:", currentUserId, "didIBlock:", didIBlock);
 
   useEffect(() => {
     setShowSearch(false);

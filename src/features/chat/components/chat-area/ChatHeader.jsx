@@ -86,6 +86,14 @@ const ChatHeader = ({ activeChat, isTyping, onSearch }) => {
                   <LogOut size={18} strokeWidth={3} />
                   <span>Salir del grupo</span>
                 </button>
+              ) : didIBlock ? (
+                <button 
+                  onMouseDown={() => { handleAction('unblock'); setTimeout(() => window.location.reload(), 300); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-yellow-600 font-bold hover:bg-yellow-50 hover:pl-6 transition-all border-l-4 border-transparent hover:border-yellow-600"
+                >
+                  <Unlock size={18} strokeWidth={3} />
+                  <span>Desbloquear usuario</span>
+                </button>
               ) : (
                 <button 
                   onMouseDown={() => handleAction('block_user')}
