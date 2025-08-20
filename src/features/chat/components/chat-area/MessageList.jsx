@@ -3,7 +3,7 @@ import MessageBubble from './MessageBubble';
 import { Loader } from 'lucide-react';
 import { isSameDay, formatChatDateSeparator } from '../../../../utils/dateFormatter';
 
-const MessageList = ({ messages, currentUserId, highlightMessageId, hasMoreHistory, isLoadingMore, onLoadMore }) => {
+const MessageList = ({ messages, currentUserId, highlightMessageId, hasMoreHistory, isLoadingMore, onLoadMore, chatType }) => {
   const bottomRef = useRef(null);
   const highlightedRef = useRef(null);
 
@@ -73,9 +73,12 @@ const MessageList = ({ messages, currentUserId, highlightMessageId, hasMoreHisto
       {messages.map((msg, index) => {
         const prevMsg = messages[index - 1];
         const showDateSeparator = !prevMsg || !isSameDay(msg.create_at, prevMsg.create_at);
+        const isSentByMe = msg.user_sending_id === currentUserId;
+        const showSenderInfo = chatType === 'group' && !isSentByMe && (!prevMsg || prevMsg.user_sending_id !== msg.user_sending_id || showDateSeparator);
+        const compactMargin = !showDateSeparator && prevMsg && prevMsg.user_sending_id === msg.user_sending_id ? 'mt-1' : 'mt-4';
 
         return (
-          <div key={msg.id} className="flex flex-col gap-4">
+          <div key={msg.id} className={`flex flex-col ${compactMargin}`}>
             {showDateSeparator && (
               <div className="flex justify-center my-2">
                 <span className="bg-white border-2 border-black px-3 py-1 text-xs font-bold text-black shadow-[2px_2px_0px_0px_#000] rounded-sm uppercase tracking-wide">
@@ -86,7 +89,8 @@ const MessageList = ({ messages, currentUserId, highlightMessageId, hasMoreHisto
             <div ref={msg.id === highlightMessageId ? highlightedRef : null} className={`flex flex-col transition-all duration-1000 ${msg.id === highlightMessageId ? 'ring-4 ring-yellow-400 bg-yellow-100/30 rounded-lg p-1 scale-[1.02]' : ''}`}>
               <MessageBubble 
                 message={msg} 
-                isSentByMe={msg.user_sending_id === currentUserId} 
+                isSentByMe={isSentByMe}
+                showSenderInfo={showSenderInfo}
               />
             </div>
           </div>

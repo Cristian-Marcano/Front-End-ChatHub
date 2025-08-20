@@ -65,7 +65,8 @@ const ChatArea = ({ activeChat, currentUserId }) => {
             <div className="flex-1 overflow-hidden flex flex-col relative">
               <MessageList 
                 messages={messages}
-                currentUserId={currentUserId} 
+                currentUserId={currentUserId}
+                chatType={activeChat?.chatType} 
                 highlightMessageId={highlightMessageId}
                 hasMoreHistory={hasMoreHistory}
                 isLoadingMore={isLoadingMore}
