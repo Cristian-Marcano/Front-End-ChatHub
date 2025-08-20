@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, MoreVertical, LogOut, Ban } from 'lucide-react';
+import { Search, MoreVertical, LogOut, Ban, Unlock } from 'lucide-react';
 import ChatAvatar from '../ui/ChatAvatar';
 import ChatIconButton from '../ui/ChatIconButton';
 import { useSocket } from '../../../../context/SocketContext';
 
-const ChatHeader = ({ activeChat, isTyping, onSearch }) => {
+const ChatHeader = ({ activeChat, isTyping, onSearch, didIBlock }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const { socket } = useSocket();
