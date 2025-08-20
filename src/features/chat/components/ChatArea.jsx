@@ -74,12 +74,20 @@ const ChatArea = ({ activeChat, currentUserId }) => {
               />
             </div>
             
-            <MessageInput 
-              onSend={handleSendMessage}
-              onTyping={setTyping}
-              disabled={!activeChat}
-            />
+
+            {activeChat?.friendship_state === 'blocked' ? (
+              <div className="bg-gray-200 border-t-4 border-black p-4 text-center font-bold text-gray-600">
+                Este chat ha sido bloqueado y no permite enviar más mensajes.
+              </div>
+            ) : (
+              <MessageInput 
+                onSend={handleSendMessage}
+                onTyping={setTyping}
+                disabled={!activeChat}
+              />
+            )}
           </div>
+
 
           {/* Search Sidebar Column */}
           {showSearch && (

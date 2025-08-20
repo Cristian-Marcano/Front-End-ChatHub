@@ -35,7 +35,6 @@ const ChatHeader = ({ activeChat, isTyping, onSearch }) => {
 
   const handleAction = (action) => {
     console.log("CLICKED ACTION:", action);
-    alert("Ejecutando: " + action);
     setShowMenu(false);
     if (!socket) return;
 

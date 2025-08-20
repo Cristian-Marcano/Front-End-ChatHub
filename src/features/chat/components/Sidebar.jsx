@@ -50,7 +50,8 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
         unread: 0,
         photo: c.photo,
         chatType: c.chat_type,
-        friendId: c.friend_id 
+        friendId: c.friend_id,
+        friendship_state: c.friendship_state
       }))
     : [];
 
