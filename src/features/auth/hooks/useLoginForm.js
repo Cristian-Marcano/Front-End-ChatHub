@@ -36,7 +36,7 @@ export const useLoginForm = () => {
       try {
         const profileData = await profileService.getProfile(response.token);
         if (!profileData.idInfo) {
-          navigate('/profile');
+          navigate('/setup');
           return;
         }
       } catch (e) {
