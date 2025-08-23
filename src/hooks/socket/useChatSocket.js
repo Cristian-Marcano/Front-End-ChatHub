@@ -13,6 +13,9 @@ export const useChatSocket = (activeChatId) => {
   const [searchResults, setSearchResults] = useState([]);
   const [contactSearchResults, setContactSearchResults] = useState([]);
   const [isSearchingContacts, setIsSearchingContacts] = useState(false);
+  const [hasMoreContacts, setHasMoreContacts] = useState(true);
+  const contactSearchPageRef = useRef(1);
+  const contactSearchQueryRef = useRef('');
   const [isSearching, setIsSearching] = useState(false);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -23,7 +26,18 @@ export const useChatSocket = (activeChatId) => {
 
     
     socket.on('chat:searchedChats', (data) => {
-      setContactSearchResults(data.results || []);
+      const results = data.results || [];
+      if (contactSearchPageRef.current === 1) {
+        setContactSearchResults(results);
+      } else {
+        setContactSearchResults(prev => {
+          // Prevent duplicates
+          const existingIds = new Set(prev.map(c => c.friend_id));
+          const newUnique = results.filter(c => !existingIds.has(c.friend_id));
+          return [...prev, ...newUnique];
+        });
+      }
+      setHasMoreContacts(results.length >= 20);
       setIsSearchingContacts(false);
     });
 
@@ -184,17 +198,29 @@ export const useChatSocket = (activeChatId) => {
   }, [socket, isConnected]);
 
   
-  const searchContacts = useCallback((query) => {
+  const searchContacts = useCallback((query, loadMore = false) => {
     if (socket && isConnected) {
       if (!query.trim()) {
         setContactSearchResults([]);
         setIsSearchingContacts(false);
+        setHasMoreContacts(false);
         return;
       }
+      
+      let page = 1;
+      if (loadMore) {
+        if (!hasMoreContacts || isSearchingContacts) return;
+        page = contactSearchPageRef.current + 1;
+      } else {
+        // Reset state for new search
+        contactSearchQueryRef.current = query;
+      }
+      
+      contactSearchPageRef.current = page;
       setIsSearchingContacts(true);
-      socket.emit('chat:searchChats', { name: query, page: 1, pageSize: 20 });
+      socket.emit('chat:searchChats', { name: query, page, pageSize: 20 });
     }
-  }, [socket, isConnected]);
+  }, [socket, isConnected, hasMoreContacts, isSearchingContacts]);
 
   const searchMessages = useCallback((query) => {
     if (socket && activeChatId && query.trim()) {
@@ -241,5 +267,5 @@ export const useChatSocket = (activeChatId) => {
     }
   }, [socket, activeChatId]);
 
-  return { chats, loadMoreChats, contactSearchResults, isSearchingContacts, searchContacts, hasMoreChats, isLoadingMoreChats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
+  return { chats, loadMoreChats, contactSearchResults, isSearchingContacts, searchContacts, hasMoreContacts, hasMoreChats, isLoadingMoreChats, messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, loadChats, sendMessage, setTyping, readMessage, markAsRead, isContactTyping, searchMessages, loadContext, reloadHistory };
 };

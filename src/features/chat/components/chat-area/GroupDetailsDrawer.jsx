@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, UserPlus, Settings2, MoreVertical, Ban, ShieldAlert, ShieldX, UserMinus } from 'lucide-react';
 import ChatAvatar from '../ui/ChatAvatar';
+import AddParticipantDrawer from './AddParticipantDrawer';
 import { useSocket } from '../../../../context/SocketContext';
 
 const GroupDetailsDrawer = ({ activeChat, currentUserId, onClose }) => {
@@ -23,6 +24,7 @@ const GroupDetailsDrawer = ({ activeChat, currentUserId, onClose }) => {
   const [onlyAdminsAdd, setOnlyAdminsAdd] = useState(activeChat.add_user_permission === 'admin');
   const { socket, isConnected } = useSocket();
   const [activeMemberMenu, setActiveMemberMenu] = useState(null);
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
 
   useEffect(() => {
     if (!socket || !isConnected || !activeChat) return;
@@ -52,13 +54,22 @@ const GroupDetailsDrawer = ({ activeChat, currentUserId, onClose }) => {
         setOnlyAdminsAdd(data.add_user_permission === 'admin');
       }
     };
+    
+    const handleMemberAdded = (data) => {
+      if (data.chatId === Number(activeChat.id)) {
+        // Refetch members
+        socket.emit('group:getMembers', { chatId: Number(activeChat.id) });
+      }
+    };
 
     socket.on('group:membersList', handleMembersList);
     socket.on('group:roleUpdated', handleRoleUpdated);
     socket.on('group:memberKicked', handleMemberKicked);
     socket.on('group:settingsUpdated', handleSettingsUpdated);
+    socket.on('group:memberAdded', handleMemberAdded);
 
     return () => {
+      socket.off('group:memberAdded', handleMemberAdded);
       socket.off('group:membersList', handleMembersList);
       socket.off('group:roleUpdated', handleRoleUpdated);
       socket.off('group:memberKicked', handleMemberKicked);
@@ -151,7 +162,7 @@ const GroupDetailsDrawer = ({ activeChat, currentUserId, onClose }) => {
 
         <div className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_#000] overflow-visible relative">
           {canAddUsers && (
-            <button className="w-full flex items-center gap-4 p-4 border-b-2 border-black hover:bg-yellow-200 transition-colors text-left group">
+            <button onClick={() => setShowAddParticipant(true)} className="w-full flex items-center gap-4 p-4 border-b-2 border-black hover:bg-yellow-200 transition-colors text-left group">
               <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center border-2 border-black group-hover:scale-110 transition-transform">
                 <UserPlus size={24} className="text-white" strokeWidth={3} />
               </div>
@@ -219,6 +230,14 @@ const GroupDetailsDrawer = ({ activeChat, currentUserId, onClose }) => {
           ))}
         </div>
       </div>
+      
+      {showAddParticipant && (
+        <AddParticipantDrawer 
+          activeChat={activeChat}
+          existingMembers={members}
+          onBack={() => setShowAddParticipant(false)}
+        />
+      )}
     </div>
   );
 };

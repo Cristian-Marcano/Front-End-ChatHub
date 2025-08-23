@@ -8,7 +8,7 @@ import ChatAvatar from '../ui/ChatAvatar';
 const NewGroupDrawer = ({ friends: initialFriends, onClose, onGroupCreated }) => {
   const [step, setStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const { contactSearchResults, searchContacts, isSearchingContacts } = useChatSocket(null);
+  const { contactSearchResults, searchContacts, isSearchingContacts, hasMoreContacts } = useChatSocket(null);
   const [groupName, setGroupName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -16,13 +16,23 @@ const NewGroupDrawer = ({ friends: initialFriends, onClose, onGroupCreated }) =>
   const { socket, isConnected } = useSocket();
 
   useEffect(() => {
+    // Initial load
+    searchContacts(' ');
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchQuery.trim()) {
-        searchContacts(searchQuery);
-      }
+      searchContacts(searchQuery || ' ');
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery, searchContacts]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    if (scrollHeight - scrollTop - clientHeight < 50 && hasMoreContacts && !isSearchingContacts) {
+      searchContacts(searchQuery || ' ', true);
+    }
+  };
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -120,15 +130,16 @@ const NewGroupDrawer = ({ friends: initialFriends, onClose, onGroupCreated }) =>
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-white flex flex-col relative pb-24">
-            {displayFriends.length === 0 ? (
+          <div className="flex-1 overflow-y-auto bg-white flex flex-col relative pb-24" onScroll={handleScroll}>
+            {displayFriends.length === 0 && !isSearchingContacts ? (
               <div className="text-center p-8 font-bold text-gray-500">
                 No tienes amigos disponibles.
               </div>
             ) : (
-              displayFriends.map(friend => {
-                const fId = friend.friendId || friend.id;
-                const isSelected = selectedFriends.some(f => (f.friendId || f.id) === fId);
+              <>
+                {displayFriends.map(friend => {
+                  const fId = friend.friendId || friend.id;
+                  const isSelected = selectedFriends.some(f => (f.friendId || f.id) === fId);
                 return (
                   <div 
                     key={friend.id} 
@@ -144,7 +155,13 @@ const NewGroupDrawer = ({ friends: initialFriends, onClose, onGroupCreated }) =>
                     </div>
                   </div>
                 );
-              })
+              })}
+              {isSearchingContacts && (
+                <div className="p-4 text-center font-bold text-gray-500">
+                  Cargando...
+                </div>
+              )}
+            </>
             )}
           </div>
 
