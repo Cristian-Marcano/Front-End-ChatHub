@@ -1,5 +1,6 @@
 import { useChatSocket } from '../../../hooks/socket/useChatSocket';
 import ChatHeader from './chat-area/ChatHeader';
+import GroupDetailsDrawer from './chat-area/GroupDetailsDrawer';
 import MessageList from './chat-area/MessageList';
 import MessageInput from './chat-area/MessageInput';
 import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import { Search, X } from 'lucide-react';
 const ChatArea = ({ activeChat, currentUserId }) => {
   const { messages, searchResults, isSearching, hasMoreHistory, isLoadingMore, loadMoreHistory, searchMessages, loadContext, reloadHistory, sendMessage, setTyping, isContactTyping } = useChatSocket(activeChat?.id);
   const [showSearch, setShowSearch] = useState(false);
+  const [showGroupDetails, setShowGroupDetails] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [highlightMessageId, setHighlightMessageId] = useState(null);
   
@@ -52,7 +54,8 @@ const ChatArea = ({ activeChat, currentUserId }) => {
               isTyping={isContactTyping}
               onSearch={() => setShowSearch(!showSearch)}
               didIBlock={didIBlock}
-                          />
+              onGroupDetailsClick={() => setShowGroupDetails(true)}
+            />
             
             
             {/* Banner for older context */}
@@ -144,6 +147,16 @@ const ChatArea = ({ activeChat, currentUserId }) => {
                   <p className="text-center font-bold p-4 text-gray-500 text-sm">Escribe para buscar en este chat</p>
                 )}
               </div>
+            </div>
+          )}
+          
+          {showGroupDetails && !activeChat?.friendId && (
+            <div className="absolute right-0 top-0 bottom-0 w-80 md:w-96 shadow-[0px_0px_0px_9999px_rgba(0,0,0,0.5)] z-40 border-l-4 border-black">
+              <GroupDetailsDrawer 
+                activeChat={activeChat}
+                currentUserId={currentUserId}
+                onClose={() => setShowGroupDetails(false)}
+              />
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import ChatAvatar from '../ui/ChatAvatar';
 import ChatIconButton from '../ui/ChatIconButton';
 import { useSocket } from '../../../../context/SocketContext';
 
-const ChatHeader = ({ activeChat, isTyping, onSearch, didIBlock }) => {
+const ChatHeader = ({ activeChat, isTyping, onSearch, didIBlock, onGroupDetailsClick }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const { socket } = useSocket();
@@ -56,10 +56,18 @@ const ChatHeader = ({ activeChat, isTyping, onSearch, didIBlock }) => {
 
   return (
     <div className="h-16 border-b-4 border-black bg-white flex items-center justify-between px-4 shrink-0 relative z-50">
-      <div className="flex items-center gap-4 cursor-pointer group">
+      <div 
+        className="flex items-center gap-4 cursor-pointer group"
+        onClick={() => { if(!activeChat.friendId && onGroupDetailsClick) onGroupDetailsClick(); }}
+      >
         {AvatarDisplay}
         <div>
-          <h2 className="font-black text-black leading-tight">{activeChat.name}</h2>
+          <h2 
+            className="font-black text-black leading-tight hover:underline"
+            onClick={(e) => { e.stopPropagation(); if(!activeChat.friendId && onGroupDetailsClick) onGroupDetailsClick(); }}
+          >
+            {activeChat.name}
+          </h2>
           <p className={`text-xs font-bold ${isTyping ? 'text-primary animate-pulse' : 'text-gray-600'}`}>
             {isTyping ? 'Escribiendo...' : (activeChat.status || 'En línea')}
           </p>
