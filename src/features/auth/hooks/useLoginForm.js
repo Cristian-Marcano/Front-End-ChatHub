@@ -30,7 +30,6 @@ export const useLoginForm = () => {
         localStorage.setItem('refreshToken', response.refreshToken);
       }
       
-      console.log('Login exitoso:', response);
 
       // Verify if profile info exists
       try {

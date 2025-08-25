@@ -1,8 +1,9 @@
 import { toast } from "../../../utils/toast";
 import { useState } from 'react';
+import { ENV } from '../../../config/env';
 import { z } from 'zod';
 
-const API_URL = import.meta.env.VITE_API_URL;
+
 
 export const usePasswordChange = (email) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ export const usePasswordChange = (email) => {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_URL}/forgot-password`, {
+      const response = await fetch(`${ENV.API_URL}/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,7 +47,7 @@ export const usePasswordChange = (email) => {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_URL}/reset-password`, {
+      const response = await fetch(`${ENV.API_URL}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

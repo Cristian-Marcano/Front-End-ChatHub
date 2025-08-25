@@ -148,6 +148,8 @@ export const useChatSocket = (activeChatId) => {
       socket.off('chat:typing');
       socket.off('group:addedToGroup');
       socket.off('group:left');
+      socket.off('friendship:blocked', handleFriendshipStatusChange);
+      socket.off('friendship:unblocked', handleFriendshipStatusChange);
       socket.off('chat:messagesRead');
 
       socket.off('chat:searchResults');

@@ -9,7 +9,6 @@ export const useGlobalSocketErrors = () => {
     if (!socket) return;
 
     const handleValidateError = (data) => {
-      console.error("Socket Validation Error:", data.error);
       toast.error(data.error?.message || 'Error de validación en la solicitud');
     };
 

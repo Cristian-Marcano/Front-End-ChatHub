@@ -1,8 +1,9 @@
 import { toast } from "../../../utils/toast";
 import { useState } from 'react';
+import { ENV } from '../../../config/env';
 import { z } from 'zod';
 
-const API_URL = import.meta.env.VITE_API_URL;
+
 
 export const useEmailChange = (originalEmail) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,7 @@ export const useEmailChange = (originalEmail) => {
       setNewEmail(email);
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/change-email/init`, {
+      const response = await fetch(`${ENV.API_URL}/api/users/change-email/init`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ export const useEmailChange = (originalEmail) => {
       setError(null);
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/change-email/verify`, {
+      const response = await fetch(`${ENV.API_URL}/api/users/change-email/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
