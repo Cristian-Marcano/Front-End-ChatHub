@@ -11,6 +11,8 @@ const MessageBubble = ({ message, isSentByMe, showSenderInfo }) => {
     : '';
 
   const senderName = message.nickname || message.username || 'Usuario';
+  const isGif = message.msg_text?.startsWith('GIPHY:');
+  const gifUrl = isGif ? message.msg_text.split('GIPHY:')[1] : null;
 
   return (
     <div className={`${alignClass} max-w-[75%]`}>
@@ -21,7 +23,11 @@ const MessageBubble = ({ message, isSentByMe, showSenderInfo }) => {
         </div>
       )}
       <div className={`${bgClass} border-4 border-black p-3 rounded-sm shadow-[4px_4px_0px_0px_#000]`}>
-        <p className={`font-bold ${textClass} text-base break-words`}>{message.msg_text}</p>
+        {isGif ? (
+          <img src={gifUrl} alt="GIF" className="max-w-full rounded-sm border-2 border-black" />
+        ) : (
+          <p className={`font-bold ${textClass} text-base break-words`}>{message.msg_text}</p>
+        )}
         <span className={`text-[10px] ${timeClass} font-black block text-right mt-1`}>
           {formattedTime} {isSentByMe && (
             <span className={message.status === 'read' ? 'text-blue-600' : 'text-gray-500'}>

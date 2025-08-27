@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Paperclip, Send } from 'lucide-react';
+import { Paperclip, Send, Sticker } from 'lucide-react';
+import GifPicker from './GifPicker';
 import ChatIconButton from '../ui/ChatIconButton';
 
 const MessageInput = ({ onSend, onTyping, disabled }) => {
   const [text, setText] = useState('');
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -45,8 +47,19 @@ const MessageInput = ({ onSend, onTyping, disabled }) => {
   };
 
   return (
-    <div className="min-h-[72px] border-t-4 border-black bg-white flex items-center px-4 py-3 gap-4 shrink-0 relative z-10">
-      <ChatIconButton icon={Paperclip} onClick={() => {}} title="Adjuntar" />
+    <div className="min-h-[72px] border-t-4 border-black bg-white flex items-center px-4 py-3 gap-4 shrink-0 relative z-40">
+      {showGifPicker && (
+        <GifPicker 
+          onClose={() => setShowGifPicker(false)} 
+          onSelectGif={(url) => {
+            onSend(`GIPHY:${url}`);
+            setShowGifPicker(false);
+          }} 
+        />
+      )}
+      <div className="relative">
+        <ChatIconButton icon={Sticker} onClick={() => setShowGifPicker(prev => !prev)} title="Enviar GIF" />
+      </div>
       
       <input 
         type="text" 
