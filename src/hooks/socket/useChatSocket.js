@@ -116,15 +116,19 @@ export const useChatSocket = (activeChatId) => {
     
     
     socket.on('group:left', (data) => {
-      // Si el usuario sale del grupo, recargamos los chats y des-seleccionamos el chat activo si era este
       setChatPage(1);
       setHasMoreChats(true);
       socket.emit('chat:getAll', { page: 1, pageSize: 20 });
-      // We can't clear activeChatId directly here unless we expose it, but ChatLayout handles the selection.
-      // Usually, if the active chat disappears from the list, it will just show "Chat not found" or we can navigate away.
-      // Actually if they click it, the chat might stay open but fail to send messages. A simple window.location.reload() or passing an event is better, but reloading chat list is enough.
-      window.location.reload(); // Quick brutalist way to clear context.
     });
+
+    const handleFriendshipStatusChange = () => {
+      setChatPage(1);
+      setHasMoreChats(true);
+      socket.emit('chat:getAll', { page: 1, pageSize: 20 });
+    };
+
+    socket.on('friendship:blocked', handleFriendshipStatusChange);
+    socket.on('friendship:unblocked', handleFriendshipStatusChange);
 
     socket.on('group:addedToGroup', () => {
       // Reload chats if someone adds us to a group

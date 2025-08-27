@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ChatArea from './ChatArea';
+import ErrorBoundary from './ErrorBoundary';
 import { useGlobalSocketErrors } from '../../../hooks/socket/useGlobalSocketErrors';
 import { profileService } from '../../profile/services/profileService';
 
@@ -38,10 +39,12 @@ const ChatLayout = () => {
         onChatSelect={setActiveChat} 
         userProfile={userProfile}
       />
-      <ChatArea 
-        activeChat={activeChat} 
-        currentUserId={userProfile?.id}
-      />
+      <ErrorBoundary>
+        <ChatArea 
+          activeChat={activeChat} 
+          currentUserId={userProfile?.id}
+        />
+      </ErrorBoundary>
       </div>
   );
 };

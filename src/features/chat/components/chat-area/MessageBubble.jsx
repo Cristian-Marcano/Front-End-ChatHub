@@ -11,7 +11,7 @@ const MessageBubble = ({ message, isSentByMe, showSenderInfo }) => {
     : '';
 
   const senderName = message.nickname || message.username || 'Usuario';
-  const isGif = message.msg_text?.startsWith('GIPHY:');
+  const isGif = typeof message.msg_text === 'string' && message.msg_text.startsWith('GIPHY:');
   const gifUrl = isGif ? message.msg_text.split('GIPHY:')[1] : null;
 
   return (
