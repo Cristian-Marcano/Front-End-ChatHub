@@ -43,6 +43,8 @@ const Sidebar = ({ activeChatId, onChatSelect, userProfile }) => {
 
   const mappedChats = chats && chats.length > 0 
     ? chats.map(c => ({
+        ...c,
+        // normalize id for frontend usage
         id: c.id, 
         name: c.nickname || "Usuario", 
         lastMessage: c.last_message || 'Sin mensajes',
