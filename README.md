@@ -1,12 +1,78 @@
-# React + Vite
+# ChatHub Frontend 💬
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChatHub is a robust, real-time messaging platform originally developed as an academic project for **Artificial Intelligence** and **Software Development II** at Universidad Gran Mariscal de Ayacucho. It has since evolved into a complete, portfolio-ready application.
 
-Currently, two official plugins are available:
+This repository contains the **Frontend** of ChatHub. It provides a clean, highly responsive user interface with real-time chat capabilities, dynamic avatar generation, and integrated GIF sharing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Key Features
 
-## Expanding the ESLint configuration
+* **Real-time Messaging:** Lightning-fast message delivery using `Socket.io-client` with instant UI updates.
+* **Modern UI/UX:** Responsive, mobile-first design powered by `Tailwind CSS v4`.
+* **Dynamic Avatars:** Automatically generates unique, stylish avatars for users and groups using `Dicebear`.
+* **GIF Integration:** First-class support for searching and sending GIFs via the `@giphy/react-components` API.
+* **Robust Form Handling:** Secure and reliable forms with `react-hook-form` and strict `Zod` validation schemas.
+* **Component-driven Architecture:** Highly modular and scalable React folder structure (Feature-Sliced Design principles).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+
+* **Framework:** React 19
+* **Build Tool:** Vite
+* **Styling:** Tailwind CSS v4
+* **Real-time Engine:** Socket.io-client
+* **Routing:** React Router Dom
+* **Icons:** Lucide React
+* **Forms & Validation:** React Hook Form + Zod
+* **Testing:** Playwright (End-to-End)
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Node.js (v18+)
+* npm or pnpm
+* A running instance of the **ChatHub Backend**
+
+### Installation
+
+1. Clone the repository and navigate to the directory:
+   ```bash
+   git clone <repo-url>
+   cd Front-End-ChatHub
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. Configure Environment Variables:
+   Create a `.env` file in the root directory and configure the following variables to point to your backend:
+   ```env
+   VITE_API_URL=http://localhost:3001
+   VITE_GIPHY_API_KEY=your_giphy_api_key
+   ```
+
+4. Run the Development Server:
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+## 🧪 Testing
+
+This project uses **Playwright** for End-to-End (E2E) testing.
+
+```bash
+# Run tests in UI mode
+npx playwright test --ui
+
+# Run tests in headless mode
+npx playwright test
+```
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
